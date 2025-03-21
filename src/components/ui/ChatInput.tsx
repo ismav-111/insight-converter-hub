@@ -11,13 +11,15 @@ interface ChatInputProps {
   placeholder?: string;
   className?: string;
   showSuggestions?: boolean;
+  disabled?: boolean;
 }
 
 const ChatInput = ({ 
   onSend,
-  placeholder = "Start typing...", 
+  placeholder = "Type a message...", 
   className,
-  showSuggestions = true
+  showSuggestions = true,
+  disabled = false
 }: ChatInputProps) => {
   const [message, setMessage] = useState('');
   const [rows, setRows] = useState(1);
@@ -90,6 +92,7 @@ const ChatInput = ({
         className={cn(
           "relative flex items-end w-full rounded-xl border transition-all duration-200 overflow-hidden",
           "bg-white dark:bg-gray-950",
+          disabled ? "opacity-60 cursor-not-allowed" : "",
           isFocused 
             ? "shadow-[0_0_0_2px_rgba(74,144,226,0.3)] border-primary/50" 
             : "border-border shadow-sm hover:border-gray-400/50 dark:hover:border-gray-700/50"
@@ -104,9 +107,11 @@ const ChatInput = ({
           onBlur={() => setIsFocused(false)}
           rows={rows}
           placeholder={placeholder}
+          disabled={disabled}
           className={cn(
             "flex-1 max-h-32 py-3 pl-4 pr-12 bg-transparent resize-none outline-none",
-            "text-foreground placeholder:text-muted-foreground"
+            "text-foreground placeholder:text-muted-foreground",
+            disabled ? "cursor-not-allowed" : ""
           )}
         />
 
@@ -121,6 +126,7 @@ const ChatInput = ({
               description: "File upload is not available in this demo.",
               duration: 3000
             })}
+            disabled={disabled}
           >
             <Paperclip className="h-4 w-4" />
             <span className="sr-only">Attach file</span>
@@ -136,6 +142,7 @@ const ChatInput = ({
               description: "Voice input is not available in this demo.",
               duration: 3000
             })}
+            disabled={disabled}
           >
             <Mic className="h-4 w-4" />
             <span className="sr-only">Voice input</span>
@@ -146,12 +153,12 @@ const ChatInput = ({
             size="icon"
             className={cn(
               "h-8 w-8 rounded-full transition-all duration-200",
-              message.trim() 
+              message.trim() && !disabled
                 ? "bg-primary text-primary-foreground hover:bg-primary/90" 
                 : "bg-muted text-muted-foreground"
             )}
             onClick={handleSend}
-            disabled={!message.trim()}
+            disabled={!message.trim() || disabled}
           >
             <Send className="h-4 w-4" />
             <span className="sr-only">Send message</span>

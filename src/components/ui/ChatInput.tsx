@@ -1,6 +1,6 @@
 
 import { useState, useRef, KeyboardEvent } from 'react';
-import { PaperPlaneIcon, PaperclipIcon, MicIcon, Sparkles } from 'lucide-react';
+import { Send, Paperclip, Mic, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
@@ -122,7 +122,7 @@ const ChatInput = ({
               duration: 3000
             })}
           >
-            <PaperclipIcon className="h-4 w-4" />
+            <Paperclip className="h-4 w-4" />
             <span className="sr-only">Attach file</span>
           </Button>
           
@@ -137,7 +137,7 @@ const ChatInput = ({
               duration: 3000
             })}
           >
-            <MicIcon className="h-4 w-4" />
+            <Mic className="h-4 w-4" />
             <span className="sr-only">Voice input</span>
           </Button>
           
@@ -153,7 +153,7 @@ const ChatInput = ({
             onClick={handleSend}
             disabled={!message.trim()}
           >
-            <PaperPlaneIcon className="h-4 w-4" />
+            <Send className="h-4 w-4" />
             <span className="sr-only">Send message</span>
           </Button>
         </div>

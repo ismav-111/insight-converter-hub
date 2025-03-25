@@ -11,26 +11,29 @@ import EnDocs from "./pages/EnDocs";
 import EnCore from "./pages/EnCore";
 import NotFound from "./pages/NotFound";
 import NavBar from "./components/layout/NavBar";
+import { AppProvider } from "./contexts/AppContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AnimatePresence mode="wait">
-          <NavBar />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/ensights" element={<EnSights />} />
-            <Route path="/endocs" element={<EnDocs />} />
-            <Route path="/encore" element={<EnCore />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AnimatePresence>
-      </BrowserRouter>
+      <AppProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AnimatePresence mode="wait">
+            <NavBar />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/ensights" element={<EnSights />} />
+              <Route path="/endocs" element={<EnDocs />} />
+              <Route path="/encore" element={<EnCore />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AnimatePresence>
+        </BrowserRouter>
+      </AppProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

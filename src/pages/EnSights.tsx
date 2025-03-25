@@ -1,42 +1,97 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Layout, CircleUser, Cpu, Database } from 'lucide-react';
+import { LayoutPanelLeft, Bot, User, Clock, Database, BarChart3 } from 'lucide-react';
 import DataSourceIndicator from '@/components/shared/DataSourceIndicator';
 import DataVisualizer from '@/components/ui/DataVisualizer';
 import ChatInput from '@/components/ui/ChatInput';
-import { citySalesData, DataSource, dataSources, textResponses } from '@/lib/mock-data';
+import { DataSource, dataSources, textResponses, citySalesData } from '@/lib/mock-data';
 import { useToast } from '@/components/ui/use-toast';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+
+interface Message {
+  id: string;
+  content: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+  showGraph?: boolean;
+}
 
 const EnSights = () => {
-  const [currentDataSource, setCurrentDataSource] = useState<DataSource>(dataSources[0]);
+  const [currentDataSource, setCurrentDataSource] = useState<DataSource>(dataSources[1]);
   const [isLoading, setIsLoading] = useState(false);
-  const [query, setQuery] = useState('');
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      content: "Hello! I'm your EnSights assistant. How can I help you visualize and analyze your data today?",
+      sender: 'bot',
+      timestamp: new Date(),
+    }
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
   const { toast } = useToast();
 
   const handleSendQuery = (message: string) => {
-    setQuery(message);
+    // Add user message
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: message,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
+    setIsTyping(true);
     
     // Simulate API call
     setTimeout(() => {
+      // Determine if this query should show a graph
+      const shouldShowGraph = message.toLowerCase().includes('chart') || 
+                             message.toLowerCase().includes('graph') || 
+                             message.toLowerCase().includes('visualization') ||
+                             message.toLowerCase().includes('data') ||
+                             Math.random() > 0.7; // High chance to show graph for EnSights
+      
+      // Get a response based on the query
+      let responseText = "";
+      if (message.toLowerCase().includes('sales')) {
+        responseText = textResponses[0];
+      } else if (message.toLowerCase().includes('trend')) {
+        responseText = textResponses[2];
+      } else if (message.toLowerCase().includes('compare')) {
+        responseText = textResponses[3];
+      } else {
+        // Pick a random response
+        const randomIndex = Math.floor(Math.random() * textResponses.length);
+        responseText = textResponses[randomIndex];
+      }
+      
+      const botMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        content: responseText,
+        sender: 'bot',
+        timestamp: new Date(),
+        showGraph: shouldShowGraph
+      };
+      
+      setMessages(prev => [...prev, botMessage]);
       setIsLoading(false);
+      setIsTyping(false);
+      
       toast({
-        title: "Query processed",
-        description: "We've processed your query and updated the visualization.",
+        title: "Visualization generated",
+        description: "We've processed your query and created the visualization.",
         duration: 3000,
       });
     }, 1500);
   };
 
-  useEffect(() => {
-    // Animation for initial load
-    const timer = setTimeout(() => {
-      document.documentElement.style.setProperty('--page-loaded', 'true');
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, []);
+  // Format time for chat messages
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
 
   // Animation variants
   const containerAnimation = {
@@ -63,41 +118,27 @@ const EnSights = () => {
     }
   };
 
-  const getTextContent = () => {
-    // Return a different text response based on the query
-    if (query.toLowerCase().includes('growth')) {
-      return textResponses[2];
-    } else if (query.toLowerCase().includes('market') || query.toLowerCase().includes('trend')) {
-      return textResponses[3];
-    } else if (query.toLowerCase().includes('inventory')) {
-      return textResponses[4];
-    } else if (query.toLowerCase().includes('customer')) {
-      return textResponses[1];
-    }
-    return textResponses[0];
-  };
-
   return (
     <motion.div 
-      className="pt-20 px-4 md:px-8 pb-8 max-w-7xl mx-auto"
+      className="min-h-screen pt-20 px-4 md:px-8 pb-8 mx-auto"
       initial="hidden"
       animate="show"
       variants={containerAnimation}
     >
-      <motion.div
-        className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6"
+      <motion.div 
+        className="max-w-5xl mx-auto mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
         variants={itemAnimation}
       >
         <div>
           <div className="pill bg-primary/10 text-primary mb-2 font-medium">
-            <Layout className="w-3.5 h-3.5 mr-1.5" />
-            EnSights
+            <BarChart3 className="w-3.5 h-3.5 mr-1.5" />
+            Data Visualization
           </div>
           <h1 className="text-2xl md:text-3xl font-bold mb-1">
-            Data Visualization & Insights
+            EnSights
           </h1>
           <p className="text-muted-foreground">
-            Visualize your data with advanced analytics and get actionable insights
+            Chat with your data and get instant visualizations
           </p>
         </div>
 
@@ -107,50 +148,127 @@ const EnSights = () => {
         />
       </motion.div>
 
+      {/* Main Chat Container */}
       <motion.div 
-        className="grid grid-cols-1 xl:grid-cols-2 gap-6"
-        variants={itemAnimation}
+        variants={itemAnimation} 
+        className="glass-panel max-w-5xl mx-auto p-4 md:p-6 flex flex-col h-[650px] mb-6"
       >
-        <DataVisualizer 
-          data={citySalesData}
-          title="Sales by City"
-        />
-        
-        <DataVisualizer 
-          data={citySalesData}
-          title="Growth Analysis"
-          textContent={getTextContent()}
-        />
-      </motion.div>
-
-      <motion.div 
-        className="mt-6 w-full max-w-2xl mx-auto"
-        variants={itemAnimation}
-      >
-        <div className="mb-2 flex items-center justify-between">
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <Cpu className="w-3.5 h-3.5" />
-            <span>Suggested: "Could you give the barchart of the above data"</span>
+        <div className="flex items-center justify-between mb-4 border-b border-border/40 pb-3">
+          <div className="flex items-center gap-2">
+            <Database className="h-4 w-4 text-primary" />
+            <h3 className="font-medium">Current Data Source: <span className="text-primary">{currentDataSource.name}</span></h3>
           </div>
-          
-          <div className="flex items-center gap-1 text-xs">
-            <span className="pill bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-              <CircleUser className="w-3 h-3 mr-1" />
-              <span>You</span>
-            </span>
-            <span className="pill bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300">
-              <Database className="w-3 h-3 mr-1" />
-              <span>System</span>
-            </span>
+          <div className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">Session started at {new Date().toLocaleTimeString()}</span>
+          </div>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto pr-2 mb-4">
+          <div className="space-y-6 pb-2">
+            {messages.map((message) => (
+              <div key={message.id} className="space-y-4">
+                <div
+                  className={cn(
+                    "flex w-full",
+                    message.sender === 'user' ? "justify-end" : "justify-start"
+                  )}
+                >
+                  <div className={cn(
+                    "flex items-start max-w-[90%]",
+                    message.sender === 'user' ? "flex-row-reverse" : "flex-row"
+                  )}>
+                    <div className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-full",
+                      message.sender === 'user' ? "ml-2" : "mr-2"
+                    )}>
+                      {message.sender === 'user' ? (
+                        <Avatar className="h-8 w-8 border border-border">
+                          <AvatarFallback className="bg-blue-100 text-blue-800 text-xs">
+                            <User className="h-4 w-4" />
+                          </AvatarFallback>
+                        </Avatar>
+                      ) : (
+                        <Avatar className="h-8 w-8 border border-border">
+                          <AvatarFallback className="bg-violet-100 text-violet-800 text-xs">
+                            <Bot className="h-4 w-4" />
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                    </div>
+                    
+                    <div className={cn(
+                      "rounded-lg px-4 py-3",
+                      message.sender === 'user' 
+                        ? "bg-primary text-primary-foreground" 
+                        : "bg-muted/50"
+                    )}>
+                      <div className="mb-1 flex items-center justify-between gap-2">
+                        <span className="text-xs font-medium">
+                          {message.sender === 'user' ? 'You' : 'EnSights AI'}
+                        </span>
+                        <span className="flex items-center text-xs opacity-70">
+                          <Clock className="mr-1 h-3 w-3" />
+                          {formatTime(message.timestamp)}
+                        </span>
+                      </div>
+                      <p className="whitespace-pre-line text-sm">{message.content}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {message.showGraph && (
+                  <div className="pl-10 pr-10">
+                    <DataVisualizer 
+                      data={citySalesData}
+                      title="Data Visualization"
+                      className="bg-muted/10"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+            
+            {isTyping && (
+              <div className="flex w-full justify-start">
+                <div className="flex items-start max-w-[90%]">
+                  <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-full">
+                    <Avatar className="h-8 w-8 border border-border">
+                      <AvatarFallback className="bg-violet-100 text-violet-800 text-xs">
+                        <Bot className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <div className="rounded-lg bg-muted/50 px-4 py-3">
+                    <div className="mb-1 flex items-center gap-2">
+                      <span className="text-xs font-medium">EnSights AI</span>
+                    </div>
+                    <div className="flex space-x-1">
+                      <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60"></div>
+                      <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60 animation-delay-200"></div>
+                      <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60 animation-delay-500"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
         
         <ChatInput 
           onSend={handleSendQuery}
-          placeholder="Ask something about your data..."
+          placeholder="Ask about your data or request visualizations..."
           showSuggestions={true}
           className={isLoading ? "opacity-70 pointer-events-none" : ""}
         />
+      </motion.div>
+      
+      {/* Data Source Info */}
+      <motion.div variants={itemAnimation} className="max-w-5xl mx-auto">
+        <div className="text-center text-sm text-muted-foreground">
+          <p>Try asking questions like "Show sales data by city" or "Create a visualization of quarterly trends"</p>
+          <p className="mt-1">You can change data sources using the selector at the top right</p>
+        </div>
       </motion.div>
     </motion.div>
   );

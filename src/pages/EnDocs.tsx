@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Bot, User, Clock, Database, MessageSquare } from 'lucide-react';
@@ -15,25 +14,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 const EnDocs = () => {
   const { 
-    // Chat sessions
     sessions,
     activeSessionId,
     createNewSession,
     selectSession,
     deleteSession,
     
-    // Messages
     messages,
     addMessage,
     isTyping,
     
-    // Documents
     documents,
     uploadDocuments,
     removeDocument,
     isUploading,
     
-    // Data source
     currentDataSource,
     setCurrentDataSource
   } = useApp();
@@ -42,22 +37,17 @@ const EnDocs = () => {
   const { toast } = useToast();
 
   const handleSendQuery = (message: string) => {
-    // Add user message
     addMessage(message, 'user');
     
     setIsLoading(true);
     
-    // Simulate API call
     setTimeout(() => {
-      // For EnDocs, we'll only show tables and text, no graphs
       const shouldShowTable = message.toLowerCase().includes('table') || 
                              message.toLowerCase().includes('document') ||
-                             Math.random() > 0.5; // 50% chance to show table for demo purposes
+                             Math.random() > 0.5;
       
-      // Generate a simple response
       const responseText = `I've analyzed your documents regarding "${message}" and here's what I found...`;
       
-      // Add bot message - showGraph is false here since we only want tables
       addMessage(responseText, 'bot', false, shouldShowTable);
       
       setIsLoading(false);
@@ -70,12 +60,10 @@ const EnDocs = () => {
     }, 1500);
   };
 
-  // Format time for chat messages
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Animation variants
   const containerAnimation = {
     hidden: { opacity: 0 },
     show: {
@@ -100,7 +88,6 @@ const EnDocs = () => {
     }
   };
 
-  // Render a table for document analysis
   const renderDocumentTable = () => {
     return (
       <div className="w-full overflow-x-auto pt-2">
@@ -114,23 +101,27 @@ const EnDocs = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {documentData.map((doc, i) => (
-              <TableRow key={i} className="transition-colors hover:bg-muted/30">
-                <TableCell className="font-medium">{doc.fileName}</TableCell>
-                <TableCell>{doc.type}</TableCell>
-                <TableCell>{doc.date}</TableCell>
-                <TableCell className="text-right">
-                  <span className={cn(
-                    "inline-block px-2 py-0.5 rounded text-xs font-medium",
-                    doc.relevance > 80 ? "bg-green-100 text-green-800" : 
-                    doc.relevance > 50 ? "bg-blue-100 text-blue-800" : 
-                    "bg-amber-100 text-amber-800"
-                  )}>
-                    {doc.relevance}%
-                  </span>
-                </TableCell>
-              </TableRow>
-            ))}
+            {documentData.map((doc, i) => {
+              const relevance = 85 - (i * 10);
+              
+              return (
+                <TableRow key={i} className="transition-colors hover:bg-muted/30">
+                  <TableCell className="font-medium">{doc.title}</TableCell>
+                  <TableCell>{doc.type}</TableCell>
+                  <TableCell>{doc.created}</TableCell>
+                  <TableCell className="text-right">
+                    <span className={cn(
+                      "inline-block px-2 py-0.5 rounded text-xs font-medium",
+                      relevance > 80 ? "bg-green-100 text-green-800" : 
+                      relevance > 50 ? "bg-blue-100 text-blue-800" : 
+                      "bg-amber-100 text-amber-800"
+                    )}>
+                      {relevance}%
+                    </span>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
@@ -167,12 +158,10 @@ const EnDocs = () => {
         />
       </motion.div>
 
-      {/* Main Content Container */}
       <motion.div 
         variants={itemAnimation} 
         className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6"
       >
-        {/* Sidebar */}
         <div className="w-full lg:w-64 flex flex-col gap-6">
           <div className="glass-panel p-4">
             <ChatSessionList 
@@ -194,7 +183,6 @@ const EnDocs = () => {
           </div>
         </div>
 
-        {/* Chat Container */}
         <motion.div 
           variants={itemAnimation} 
           className="glass-panel flex-1 p-4 md:p-6 flex flex-col h-[650px]"
@@ -263,7 +251,6 @@ const EnDocs = () => {
                     </div>
                   </div>
                   
-                  {/* Here we show table instead of graph */}
                   {message.showTable && message.sender === 'bot' && (
                     <div className="pl-10 pr-10">
                       <div className="glass-panel p-4">
@@ -310,7 +297,6 @@ const EnDocs = () => {
         </motion.div>
       </motion.div>
       
-      {/* Help Text */}
       <motion.div variants={itemAnimation} className="max-w-6xl mx-auto mt-4">
         <div className="text-center text-sm text-muted-foreground">
           <p>Try asking questions like "Analyze document trends" or "Summarize the latest reports"</p>

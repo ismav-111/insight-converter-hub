@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { ChatSession } from '@/components/chat/ChatSessionList';
 import { UploadedDocument } from '@/components/documents/DocumentUploader';
@@ -11,6 +10,7 @@ interface Message {
   sender: 'user' | 'bot';
   timestamp: Date;
   showGraph?: boolean;
+  showTable?: boolean;
 }
 
 interface AppContextType {
@@ -23,7 +23,7 @@ interface AppContextType {
   
   // Messages
   messages: Message[];
-  addMessage: (content: string, sender: 'user' | 'bot', showGraph?: boolean) => void;
+  addMessage: (content: string, sender: 'user' | 'bot', showGraph?: boolean, showTable?: boolean) => void;
   isTyping: boolean;
   
   // Documents
@@ -132,13 +132,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const addMessage = (content: string, sender: 'user' | 'bot', showGraph: boolean = false) => {
+  const addMessage = (content: string, sender: 'user' | 'bot', showGraph: boolean = false, showTable: boolean = false) => {
     const newMessage: Message = {
       id: Date.now().toString(),
       content,
       sender,
       timestamp: new Date(),
-      showGraph
+      showGraph,
+      showTable
     };
     
     setMessages(prev => [...prev, newMessage]);

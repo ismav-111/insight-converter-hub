@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Bot, User, Clock, Database, MessageSquare } from 'lucide-react';
 import DataSourceIndicator from '@/components/shared/DataSourceIndicator';
-import DataVisualizer from '@/components/ui/DataVisualizer';
 import ChatInput from '@/components/ui/ChatInput';
 import { documentData, dataSources, citySalesData } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +11,7 @@ import { cn } from '@/lib/utils';
 import ChatSessionList from '@/components/chat/ChatSessionList';
 import DocumentUploader from '@/components/documents/DocumentUploader';
 import { useApp } from '@/contexts/AppContext';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const EnDocs = () => {
   const { 
@@ -49,24 +49,22 @@ const EnDocs = () => {
     
     // Simulate API call
     setTimeout(() => {
-      // Determine if this query should show a graph
-      const shouldShowGraph = message.toLowerCase().includes('chart') || 
-                             message.toLowerCase().includes('graph') || 
-                             message.toLowerCase().includes('visualization') ||
+      // For EnDocs, we'll only show tables and text, no graphs
+      const shouldShowTable = message.toLowerCase().includes('table') || 
                              message.toLowerCase().includes('document') ||
-                             Math.random() > 0.5; // 50% chance to show graph for demo purposes
+                             Math.random() > 0.5; // 50% chance to show table for demo purposes
       
       // Generate a simple response
       const responseText = `I've analyzed your documents regarding "${message}" and here's what I found...`;
       
-      // Add bot message
-      addMessage(responseText, 'bot', shouldShowGraph);
+      // Add bot message - showGraph is false here since we only want tables
+      addMessage(responseText, 'bot', false, shouldShowTable);
       
       setIsLoading(false);
       
       toast({
         title: "Response generated",
-        description: "We've analyzed your documents and updated the visualization.",
+        description: "We've analyzed your documents and provided the results.",
         duration: 3000,
       });
     }, 1500);
@@ -102,6 +100,43 @@ const EnDocs = () => {
     }
   };
 
+  // Render a table for document analysis
+  const renderDocumentTable = () => {
+    return (
+      <div className="w-full overflow-x-auto pt-2">
+        <Table>
+          <TableHeader className="bg-secondary/50">
+            <TableRow>
+              <TableHead>Document</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead className="text-right">Relevance</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {documentData.map((doc, i) => (
+              <TableRow key={i} className="transition-colors hover:bg-muted/30">
+                <TableCell className="font-medium">{doc.fileName}</TableCell>
+                <TableCell>{doc.type}</TableCell>
+                <TableCell>{doc.date}</TableCell>
+                <TableCell className="text-right">
+                  <span className={cn(
+                    "inline-block px-2 py-0.5 rounded text-xs font-medium",
+                    doc.relevance > 80 ? "bg-green-100 text-green-800" : 
+                    doc.relevance > 50 ? "bg-blue-100 text-blue-800" : 
+                    "bg-amber-100 text-amber-800"
+                  )}>
+                    {doc.relevance}%
+                  </span>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
+
   return (
     <motion.div 
       className="min-h-screen pt-20 px-4 md:px-8 pb-8 mx-auto"
@@ -122,7 +157,7 @@ const EnDocs = () => {
             EnDocs
           </h1>
           <p className="text-muted-foreground">
-            Chat with your documents and get insights
+            Chat with your documents and get text-based insights
           </p>
         </div>
 
@@ -228,13 +263,13 @@ const EnDocs = () => {
                     </div>
                   </div>
                   
-                  {message.showGraph && (
+                  {/* Here we show table instead of graph */}
+                  {message.showTable && message.sender === 'bot' && (
                     <div className="pl-10 pr-10">
-                      <DataVisualizer 
-                        data={citySalesData}
-                        title="Document Analysis Visualization"
-                        className="bg-muted/10"
-                      />
+                      <div className="glass-panel p-4">
+                        <h3 className="font-medium text-sm mb-3">Document Analysis Results</h3>
+                        {renderDocumentTable()}
+                      </div>
                     </div>
                   )}
                 </div>

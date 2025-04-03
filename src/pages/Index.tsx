@@ -1,8 +1,8 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare } from 'lucide-react';
-import DataSourceIndicator from '@/components/shared/DataSourceIndicator';
+import { MessageSquare, FileText, BarChart3, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 import DataVisualizer from '@/components/ui/DataVisualizer';
 import { citySalesData } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
@@ -132,6 +132,31 @@ const Index = () => {
     return null;
   };
 
+  // Feature cards data
+  const features = [
+    {
+      title: "EnCore",
+      description: "General AI assistant for all your data needs",
+      icon: <MessageSquare className="w-10 h-10 text-primary" />,
+      route: "/encore",
+      color: "bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-900/30"
+    },
+    {
+      title: "EnDocs",
+      description: "Analyze and extract insights from your documents",
+      icon: <FileText className="w-10 h-10 text-primary" />,
+      route: "/endocs",
+      color: "bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-950/30 dark:to-orange-900/30"
+    },
+    {
+      title: "EnSights",
+      description: "Visualize your data with powerful charts and graphs",
+      icon: <BarChart3 className="w-10 h-10 text-primary" />,
+      route: "/ensights",
+      color: "bg-gradient-to-br from-emerald-50 to-teal-100 dark:from-emerald-950/30 dark:to-teal-900/30"
+    }
+  ];
+
   return (
     <motion.div 
       className="min-h-screen pt-20 px-4 md:px-8 pb-8 mx-auto"
@@ -147,6 +172,32 @@ const Index = () => {
         currentDataSource={currentDataSource}
         onSourceChange={setCurrentDataSource}
       />
+
+      {/* Features Section */}
+      <motion.div 
+        variants={itemAnimation} 
+        className="max-w-6xl mx-auto mb-8"
+      >
+        <h2 className="text-2xl font-semibold mb-6">Our Features</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {features.map((feature) => (
+            <motion.div 
+              key={feature.title}
+              whileHover={{ scale: 1.03 }}
+              className={`${feature.color} rounded-xl shadow-sm border border-border p-6 hover:shadow-md transition-all`}
+            >
+              <div className="mb-4">{feature.icon}</div>
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-muted-foreground mb-4">{feature.description}</p>
+              <Button variant="outline" asChild>
+                <Link to={feature.route} className="flex items-center gap-2">
+                  Explore {feature.title} <ArrowRight className="w-4 h-4" />
+                </Link>
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
 
       {/* Main Content Container */}
       <motion.div 

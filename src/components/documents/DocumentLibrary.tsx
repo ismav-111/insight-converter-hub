@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { File, FileText, FileSpreadsheet, FilePdf, X } from 'lucide-react';
+import { File, FileText, FileSpreadsheet, FileIcon, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { UploadedDocument } from '@/components/documents/DocumentUploader';
@@ -52,7 +52,7 @@ const DocumentLibrary = ({
   
   // Get icon based on file type
   const getFileIcon = (type: string) => {
-    if (type.includes('pdf')) return <FilePdf className="w-4 h-4 text-red-500" />;
+    if (type.includes('pdf')) return <FileText className="w-4 h-4 text-red-500" />;
     if (type.includes('spreadsheet') || type.includes('excel') || type.includes('xlsx')) {
       return <FileSpreadsheet className="w-4 h-4 text-green-600" />;
     }

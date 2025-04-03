@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Bot, User, Clock, Database, ArrowDown } from 'lucide-react';
+import { Bot, User, Clock, ArrowDown } from 'lucide-react';
 import ChatInput from '@/components/ui/ChatInput';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -25,6 +25,7 @@ interface ChatContainerProps {
   onSendQuery: (message: string) => void;
   renderVisualization?: (message: ChatMessage) => React.ReactNode;
   className?: string;
+  showDataSourceHeader?: boolean;
 }
 
 const ChatContainer = ({
@@ -34,7 +35,8 @@ const ChatContainer = ({
   currentDataSource,
   onSendQuery,
   renderVisualization,
-  className
+  className,
+  showDataSourceHeader = false
 }: ChatContainerProps) => {
   // Format time for chat messages
   const formatTime = (date: Date) => {
@@ -69,8 +71,7 @@ const ChatContainer = ({
     >
       <div className="flex items-center justify-between mb-4 border-b border-border/40 pb-3">
         <div className="flex items-center gap-2">
-          <Database className="h-4 w-4 text-primary" />
-          <h3 className="font-medium">Current Data Source: <span className="text-primary">{currentDataSource.name}</span></h3>
+          <h3 className="font-medium">Chat Assistant</h3>
         </div>
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
@@ -186,7 +187,7 @@ const ChatContainer = ({
       </div>
       
       <div className="relative">
-        {isTyping && (
+        {(isTyping || showDataSourceHeader) && (
           <div className="absolute -top-6 left-0 right-0 text-center">
             <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full inline-block">
               Using data source: {currentDataSource.name}

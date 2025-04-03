@@ -8,12 +8,14 @@ interface DataSourceIndicatorProps {
   currentSource?: DataSource;
   onSourceChange?: (source: DataSource) => void;
   className?: string;
+  compact?: boolean;
 }
 
 const DataSourceIndicator = ({ 
   currentSource,
   onSourceChange,
-  className 
+  className,
+  compact = false
 }: DataSourceIndicatorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const selected = currentSource || dataSources[0];
@@ -33,6 +35,49 @@ const DataSourceIndicator = ({
     }
     setIsOpen(false);
   };
+
+  if (compact) {
+    return (
+      <div className={cn("relative inline-block", className)}>
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full inline-flex items-center gap-1.5"
+          aria-expanded={isOpen}
+          aria-haspopup="true"
+        >
+          {getIcon(selected.type)}
+          <span>{selected.name}</span>
+          <ChevronDown className="w-3 h-3" />
+        </button>
+
+        {isOpen && (
+          <div 
+            className="absolute z-10 mt-1 w-40 max-h-60 overflow-auto rounded-md glass-panel shadow-lg py-1"
+            onMouseLeave={() => setIsOpen(false)}
+          >
+            <div className="py-1">
+              {dataSources.map((source) => (
+                <button
+                  key={source.id}
+                  onClick={() => handleSourceSelect(source)}
+                  className={cn(
+                    "w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors",
+                    "hover:bg-primary/5",
+                    selected.id === source.id 
+                      ? "text-primary font-medium" 
+                      : "text-foreground"
+                  )}
+                >
+                  {getIcon(source.type)}
+                  {source.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className={cn("relative inline-block", className)}>

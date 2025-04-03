@@ -1,10 +1,9 @@
 
 import React from 'react';
-import { Clock, Trash2, PenLine, FileText, BarChart3 } from 'lucide-react';
+import { Trash2, PenLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ChatSession } from '@/components/chat/ChatSessionList';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface CompactChatSessionListProps {
   sessions: ChatSession[];
@@ -29,15 +28,15 @@ const CompactChatSessionList = ({
           variant="outline" 
           size="sm" 
           onClick={onCreateNewSession}
-          className="text-xs h-8"
+          className="text-xs h-7"
         >
           New Chat
         </Button>
       </div>
       
-      <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
+      <div className="space-y-1.5 max-h-[200px] overflow-y-auto pr-1">
         {sessions.length === 0 ? (
-          <div className="text-center py-4 text-muted-foreground text-sm">
+          <div className="text-center py-3 text-muted-foreground text-xs">
             No chat sessions yet
           </div>
         ) : (
@@ -46,29 +45,13 @@ const CompactChatSessionList = ({
               key={session.id}
               onClick={() => onSelectSession(session.id)}
               className={cn(
-                "p-2 rounded-md cursor-pointer hover:bg-muted/50 transition-colors",
-                "border border-border/60 flex items-center justify-between",
+                "py-1.5 px-2 rounded-md cursor-pointer hover:bg-muted/50 transition-colors",
+                "border border-border/30 flex items-center justify-between",
                 activeSessionId === session.id && "bg-muted border-primary/30"
               )}
             >
-              <div className="flex items-center gap-2 overflow-hidden">
-                {session.hasDocuments && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <FileText className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
-                    </TooltipTrigger>
-                    <TooltipContent>Has documents</TooltipContent>
-                  </Tooltip>
-                )}
-                {session.hasVisualizations && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <BarChart3 className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" />
-                    </TooltipTrigger>
-                    <TooltipContent>Has visualizations</TooltipContent>
-                  </Tooltip>
-                )}
-                <span className="font-medium text-sm truncate">
+              <div className="flex items-center overflow-hidden">
+                <span className="font-medium text-xs truncate">
                   {session.title}
                 </span>
               </div>
@@ -77,25 +60,25 @@ const CompactChatSessionList = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 rounded-full hover:bg-muted"
+                  className="h-5 w-5 rounded-full hover:bg-muted"
                   onClick={(e) => {
                     e.stopPropagation();
                     // Rename functionality would go here
                   }}
                 >
-                  <PenLine className="h-3 w-3" />
+                  <PenLine className="h-2.5 w-2.5" />
                   <span className="sr-only">Rename session</span>
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 rounded-full hover:bg-destructive/10 hover:text-destructive"
+                  className="h-5 w-5 rounded-full hover:bg-destructive/10 hover:text-destructive"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDeleteSession(session.id);
                   }}
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-2.5 w-2.5" />
                   <span className="sr-only">Delete session</span>
                 </Button>
               </div>

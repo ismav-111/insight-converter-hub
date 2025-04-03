@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText } from 'lucide-react';
-import { documentData, dataSources } from '@/lib/mock-data';
+import { documentData } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import DocumentUploader from '@/components/documents/DocumentUploader';
@@ -26,8 +26,7 @@ const EnDocs = () => {
     removeDocument,
     isUploading,
     
-    currentDataSource,
-    setCurrentDataSource
+    currentDataSource
   } = useApp();
   
   const [isLoading, setIsLoading] = useState(false);
@@ -104,7 +103,7 @@ const EnDocs = () => {
       
       toast({
         title: "Response generated",
-        description: `We've analyzed your documents using ${currentDataSource.name} and provided the results.`,
+        description: `We've analyzed your documents and provided the results.`,
         duration: 3000,
       });
     }, 1500);
@@ -143,7 +142,7 @@ const EnDocs = () => {
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-medium text-sm">Document Analysis Results</h3>
               <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                From {currentDataSource.name}
+                From Document Library
               </span>
             </div>
             <div className="w-full overflow-x-auto pt-2">
@@ -200,8 +199,6 @@ const EnDocs = () => {
         title="EnDocs"
         subtitle="Chat with your documents and get text-based insights"
         badgeText="Document Analysis"
-        currentDataSource={currentDataSource}
-        onSourceChange={setCurrentDataSource}
       />
 
       <motion.div 
@@ -251,7 +248,7 @@ const EnDocs = () => {
       <motion.div variants={itemAnimation} className="max-w-6xl mx-auto mt-4">
         <div className="text-center text-sm text-muted-foreground">
           <p>Try asking questions like "Analyze document trends" or "Summarize the latest reports"</p>
-          <p className="mt-1">Upload documents or change data sources using the controls on the left</p>
+          <p className="mt-1">Upload documents using the controls on the left to get started</p>
         </div>
       </motion.div>
     </motion.div>

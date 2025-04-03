@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Bot, User, Clock, Database } from 'lucide-react';
+import { Bot, User, Clock, Database, ArrowDown } from 'lucide-react';
 import ChatInput from '@/components/ui/ChatInput';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,7 @@ export interface ChatMessage {
   timestamp: Date;
   showGraph?: boolean;
   showTable?: boolean;
+  documentReference?: string;
 }
 
 interface ChatContainerProps {
@@ -53,6 +54,14 @@ const ChatContainer = ({
     }
   };
 
+  // Function to scroll to bottom of chat
+  const scrollToBottom = () => {
+    const chatContainer = document.getElementById('chat-messages-container');
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  };
+
   return (
     <motion.div 
       variants={itemAnimation} 
@@ -69,7 +78,7 @@ const ChatContainer = ({
         </div>
       </div>
       
-      <div className="flex-1 overflow-y-auto pr-2 mb-4">
+      <div id="chat-messages-container" className="flex-1 overflow-y-auto pr-2 mb-4 relative">
         <div className="space-y-6 pb-2">
           {messages.map((message) => (
             <div key={message.id} className="space-y-4">
@@ -118,6 +127,13 @@ const ChatContainer = ({
                       </span>
                     </div>
                     <p className="whitespace-pre-line text-sm">{message.content}</p>
+                    
+                    {/* Document reference if available */}
+                    {message.sender === 'bot' && message.documentReference && (
+                      <div className="mt-2 text-xs italic text-muted-foreground">
+                        Source: {message.documentReference}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -142,6 +158,9 @@ const ChatContainer = ({
                 <div className="rounded-lg bg-muted/50 px-4 py-3">
                   <div className="mb-1 flex items-center gap-2">
                     <span className="text-xs font-medium">AI Assistant</span>
+                    <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                      Using {currentDataSource.name}
+                    </span>
                   </div>
                   <div className="flex space-x-1">
                     <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60"></div>
@@ -153,14 +172,34 @@ const ChatContainer = ({
             </div>
           )}
         </div>
+        
+        {/* Scroll to bottom button - appears when there are many messages */}
+        {messages.length > 4 && (
+          <button
+            onClick={scrollToBottom}
+            className="absolute bottom-0 right-2 bg-primary text-white rounded-full p-2 shadow-md hover:bg-primary/90 transition-colors"
+            aria-label="Scroll to bottom"
+          >
+            <ArrowDown className="h-4 w-4" />
+          </button>
+        )}
       </div>
       
-      <ChatInput 
-        onSend={onSendQuery}
-        placeholder="Ask a question..."
-        showSuggestions={true}
-        className={isLoading ? "opacity-70 pointer-events-none" : ""}
-      />
+      <div className="relative">
+        {isTyping && (
+          <div className="absolute -top-6 left-0 right-0 text-center">
+            <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full inline-block">
+              Using data source: {currentDataSource.name}
+            </span>
+          </div>
+        )}
+        <ChatInput 
+          onSend={onSendQuery}
+          placeholder="Ask a question..."
+          showSuggestions={true}
+          className={isLoading ? "opacity-70 pointer-events-none" : ""}
+        />
+      </div>
     </motion.div>
   );
 };

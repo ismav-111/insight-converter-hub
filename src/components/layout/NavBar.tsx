@@ -4,8 +4,17 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from 'framer-motion';
-import { LayoutPanelLeft, FileText, MessageSquare, Bell, Menu, X } from "lucide-react";
+import {
+  LayoutPanelLeft,
+  FileText,
+  MessageSquare,
+  Bell,
+  Menu,
+  X,
+  BarChart3
+} from "lucide-react";
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const NavBar = () => {
   const location = useLocation();
@@ -26,18 +35,6 @@ const NavBar = () => {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location]);
-
-  // Detect active route for animations
-  const getRouteIndex = (path: string): number => {
-    switch (path) {
-      case '/encore': return 0;
-      case '/endocs': return 1;
-      case '/ensights': return 2;
-      default: return -1;
-    }
-  };
-
-  const activeIndex = getRouteIndex(location.pathname);
 
   // Animation variants
   const logoAnimation = {
@@ -62,6 +59,28 @@ const NavBar = () => {
     closed: { opacity: 0, x: '100%', transition: { duration: 0.3 } },
     open: { opacity: 1, x: 0, transition: { duration: 0.4 } },
   };
+
+  // Nav items with better icons and descriptions
+  const navItems = [
+    { 
+      path: '/encore', 
+      label: 'EnCore', 
+      icon: <MessageSquare className="w-5 h-5" />,
+      description: 'General AI Assistant'
+    },
+    { 
+      path: '/endocs', 
+      label: 'EnDocs', 
+      icon: <FileText className="w-5 h-5" />,
+      description: 'Document Analysis'
+    },
+    { 
+      path: '/ensights', 
+      label: 'EnSights', 
+      icon: <BarChart3 className="w-5 h-5" />,
+      description: 'Data Visualization'
+    },
+  ];
 
   return (
     <header
@@ -88,31 +107,36 @@ const NavBar = () => {
 
         {/* Desktop Navigation */}
         {!isMobile && (
-          <nav className="flex items-center space-x-1">
-            {[
-              { path: '/encore', label: 'EnCore', icon: <MessageSquare className="w-4 h-4 mr-2" /> },
-              { path: '/endocs', label: 'EnDocs', icon: <FileText className="w-4 h-4 mr-2" /> },
-              { path: '/ensights', label: 'EnSights', icon: <LayoutPanelLeft className="w-4 h-4 mr-2" /> },
-            ].map((item, i) => (
-              <motion.div
-                key={item.path}
-                custom={i}
-                initial="initial"
-                animate="animate"
-                variants={navLinkAnimation}
-              >
-                <NavLink
-                  to={item.path}
-                  className={({ isActive }) => cn(
-                    "nav-link flex items-center",
-                    isActive ? "nav-link-active" : "nav-link-inactive"
-                  )}
+          <nav className="flex items-center space-x-2">
+            <div className="px-4 py-2 bg-muted/50 rounded-full flex items-center gap-2 shadow-sm">
+              {navItems.map((item, i) => (
+                <motion.div
+                  key={item.path}
+                  custom={i}
+                  initial="initial"
+                  animate="animate"
+                  variants={navLinkAnimation}
                 >
-                  {item.icon}
-                  {item.label}
-                </NavLink>
-              </motion.div>
-            ))}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <NavLink
+                        to={item.path}
+                        className={({ isActive }) => cn(
+                          "flex items-center justify-center gap-2 px-4 py-2 rounded-full transition-colors",
+                          isActive 
+                            ? "bg-primary text-primary-foreground shadow-sm" 
+                            : "hover:bg-muted"
+                        )}
+                      >
+                        {item.icon}
+                        <span className="font-medium">{item.label}</span>
+                      </NavLink>
+                    </TooltipTrigger>
+                    <TooltipContent>{item.description}</TooltipContent>
+                  </Tooltip>
+                </motion.div>
+              ))}
+            </div>
           </nav>
         )}
 
@@ -169,23 +193,22 @@ const NavBar = () => {
           variants={mobileMenuAnimation}
         >
           <nav className="flex flex-col space-y-4">
-            {[
-              { path: '/encore', label: 'EnCore', icon: <MessageSquare className="w-5 h-5 mr-3" /> },
-              { path: '/endocs', label: 'EnDocs', icon: <FileText className="w-5 h-5 mr-3" /> },
-              { path: '/ensights', label: 'EnSights', icon: <LayoutPanelLeft className="w-5 h-5 mr-3" /> },
-            ].map((item, i) => (
+            {navItems.map((item, i) => (
               <NavLink
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) => cn(
-                  "py-2 px-4 rounded-lg flex items-center transition-colors",
+                  "py-3 px-4 rounded-lg flex items-center transition-colors",
                   isActive 
                     ? "bg-primary/10 text-primary font-medium" 
                     : "text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
                 )}
               >
                 {item.icon}
-                {item.label}
+                <div className="ml-3">
+                  <div className="font-medium">{item.label}</div>
+                  <div className="text-xs text-muted-foreground">{item.description}</div>
+                </div>
               </NavLink>
             ))}
           </nav>

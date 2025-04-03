@@ -1,71 +1,78 @@
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare, ArrowDown, Bot, User, Clock } from 'lucide-react';
-import DataSourceIndicator from '@/components/shared/DataSourceIndicator';
-import ChatInput from '@/components/ui/ChatInput';
-import { DataSource, dataSources, textResponses } from '@/lib/mock-data';
-import { useToast } from '@/components/ui/use-toast';
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-
-interface Message {
-  id: string;
-  content: string;
-  sender: 'user' | 'bot';
-  timestamp: Date;
-}
+import { MessageSquare } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useApp } from '@/contexts/AppContext';
+import DocumentUploader from '@/components/documents/DocumentUploader';
+import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
+import PageHeader from '@/components/layout/PageHeader';
+import CompactChatSessionList from '@/components/chat/CompactChatSessionList';
+import DocumentLibrary from '@/components/documents/DocumentLibrary';
 
 const EnCore = () => {
-  const [currentDataSource, setCurrentDataSource] = useState<DataSource>(dataSources[2]);
-  const [messages, setMessages] = useState<Message[]>([
+  const { 
+    sessions,
+    activeSessionId,
+    createNewSession,
+    selectSession,
+    deleteSession,
+    
+    documents,
+    uploadDocuments,
+    removeDocument,
+    isUploading,
+    
+    currentDataSource,
+    setCurrentDataSource
+  } = useApp();
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: "Hello! I'm EnCore, your AI assistant. How can I help you today?",
+      content: "Hello! I'm your EnCore assistant. I can help you with general queries about your data. How can I assist you today?",
       sender: 'bot',
       timestamp: new Date(),
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const handleSendMessage = (content: string) => {
+  const handleSendQuery = (message: string) => {
     // Add user message
-    const userMessage: Message = {
+    const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      content,
+      content: message,
       sender: 'user',
       timestamp: new Date(),
     };
     
     setMessages(prev => [...prev, userMessage]);
+    setIsLoading(true);
     setIsTyping(true);
-
-    // Simulate bot response after a delay
+    
+    // Simulate API call
     setTimeout(() => {
-      // Pick a random response from the text responses
-      const randomIndex = Math.floor(Math.random() * textResponses.length);
-      const botResponse = textResponses[randomIndex];
+      // Generate a response based on the data source
+      const responseText = `I've analyzed your query about "${message}" using the ${currentDataSource.name} data source. Here's what I found...`;
       
-      const botMessage: Message = {
+      const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: botResponse,
+        content: responseText,
         sender: 'bot',
         timestamp: new Date(),
       };
       
       setMessages(prev => [...prev, botMessage]);
+      setIsLoading(false);
       setIsTyping(false);
+      
+      toast({
+        title: "Response generated",
+        description: `Query processed using ${currentDataSource.name}`,
+        duration: 3000,
+      });
     }, 1500);
   };
 
@@ -94,145 +101,72 @@ const EnCore = () => {
     }
   };
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
-
   return (
     <motion.div 
-      className="pt-20 px-4 md:px-8 pb-8 max-w-6xl mx-auto min-h-screen flex flex-col"
+      className="min-h-screen pt-20 px-4 md:px-8 pb-8 mx-auto"
       initial="hidden"
       animate="show"
       variants={containerAnimation}
     >
-      <motion.div
-        className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6"
-        variants={itemAnimation}
+      <PageHeader
+        icon={MessageSquare}
+        title="EnCore"
+        subtitle="Chat with your data assistant for general inquiries"
+        badgeText="General Assistant"
+        currentDataSource={currentDataSource}
+        onSourceChange={setCurrentDataSource}
+      />
+
+      {/* Main Content Container */}
+      <motion.div 
+        variants={itemAnimation} 
+        className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6"
       >
-        <div>
-          <div className="pill bg-primary/10 text-primary mb-2 font-medium">
-            <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
-            EnCore
+        {/* Sidebar */}
+        <div className="w-full lg:w-64 flex flex-col gap-6">
+          <div className="glass-panel p-4">
+            <CompactChatSessionList 
+              sessions={sessions}
+              activeSessionId={activeSessionId}
+              onSelectSession={selectSession}
+              onDeleteSession={deleteSession}
+              onCreateNewSession={createNewSession}
+            />
           </div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-1">
-            AI Assistant
-          </h1>
-          <p className="text-muted-foreground">
-            Your intelligent assistant for data insights and analysis
-          </p>
+          
+          <div className="glass-panel p-4">
+            <DocumentLibrary 
+              documents={documents}
+              isUploading={isUploading}
+              onRemove={removeDocument}
+            />
+          </div>
+          
+          <div className="glass-panel p-4">
+            <DocumentUploader 
+              documents={documents}
+              onUpload={uploadDocuments}
+              onRemove={removeDocument}
+              isUploading={isUploading}
+            />
+          </div>
         </div>
 
-        <DataSourceIndicator 
-          currentSource={currentDataSource}
-          onSourceChange={setCurrentDataSource}
+        {/* Chat Container */}
+        <ChatContainer
+          messages={messages}
+          isTyping={isTyping}
+          isLoading={isLoading}
+          currentDataSource={currentDataSource}
+          onSendQuery={handleSendQuery}
         />
       </motion.div>
-
-      <motion.div 
-        className="flex-1 glass-panel p-4 md:p-6 mb-6 flex flex-col"
-        variants={itemAnimation}
-      >
-        <div className="flex-1 overflow-y-auto pr-2">
-          <div className="space-y-6 pb-2">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={cn(
-                  "flex w-full",
-                  message.sender === 'user' ? "justify-end" : "justify-start"
-                )}
-              >
-                <div className={cn(
-                  "flex items-start max-w-[80%] md:max-w-[70%]",
-                  message.sender === 'user' ? "flex-row-reverse" : "flex-row"
-                )}>
-                  <div className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full",
-                    message.sender === 'user' ? "ml-2" : "mr-2"
-                  )}>
-                    {message.sender === 'user' ? (
-                      <Avatar className="h-8 w-8 border border-border">
-                        <AvatarFallback className="bg-blue-100 text-blue-800 text-xs">
-                          <User className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
-                    ) : (
-                      <Avatar className="h-8 w-8 border border-border">
-                        <AvatarFallback className="bg-violet-100 text-violet-800 text-xs">
-                          <Bot className="h-4 w-4" />
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                  </div>
-                  
-                  <div className={cn(
-                    "rounded-lg px-4 py-3",
-                    message.sender === 'user' 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-muted/50"
-                  )}>
-                    <div className="mb-1 flex items-center justify-between gap-2">
-                      <span className="text-xs font-medium">
-                        {message.sender === 'user' ? 'You' : 'EnCore'}
-                      </span>
-                      <span className="flex items-center text-xs opacity-70">
-                        <Clock className="mr-1 h-3 w-3" />
-                        {formatTime(message.timestamp)}
-                      </span>
-                    </div>
-                    <p className="whitespace-pre-line text-sm">{message.content}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-            
-            {isTyping && (
-              <div className="flex w-full justify-start">
-                <div className="flex items-start max-w-[80%] md:max-w-[70%]">
-                  <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-full">
-                    <Avatar className="h-8 w-8 border border-border">
-                      <AvatarFallback className="bg-violet-100 text-violet-800 text-xs">
-                        <Bot className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div className="rounded-lg bg-muted/50 px-4 py-3">
-                    <div className="mb-1 flex items-center gap-2">
-                      <span className="text-xs font-medium">EnCore</span>
-                    </div>
-                    <div className="flex space-x-1">
-                      <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60"></div>
-                      <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60 animation-delay-200"></div>
-                      <div className="h-2 w-2 animate-pulse rounded-full bg-current opacity-60 animation-delay-500"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-
-        <div className="pt-4 border-t border-border/40 mt-auto">
-          {messages.length > 5 && (
-            <div className="pb-4 flex justify-center">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1.5 text-xs"
-                onClick={scrollToBottom}
-              >
-                <ArrowDown className="h-3.5 w-3.5" />
-                Scroll to bottom
-              </Button>
-            </div>
-          )}
-
-          <ChatInput 
-            onSend={handleSendMessage}
-            placeholder="Ask me anything..."
-            showSuggestions={false}
-          />
+      
+      {/* Help Text */}
+      <motion.div variants={itemAnimation} className="max-w-6xl mx-auto mt-4">
+        <div className="text-center text-sm text-muted-foreground">
+          <p>Try asking questions like "What insights can you provide about my data?" or "Help me understand my current dataset"</p>
+          <p className="mt-1">You can change data sources using the selector at the top right</p>
         </div>
       </motion.div>
     </motion.div>

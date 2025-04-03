@@ -2,15 +2,16 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileText } from 'lucide-react';
-import DataSourceIndicator from '@/components/shared/DataSourceIndicator';
 import { documentData, dataSources } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import ChatSessionList from '@/components/chat/ChatSessionList';
 import DocumentUploader from '@/components/documents/DocumentUploader';
 import { useApp } from '@/contexts/AppContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
+import PageHeader from '@/components/layout/PageHeader';
+import CompactChatSessionList from '@/components/chat/CompactChatSessionList';
+import DocumentLibrary from '@/components/documents/DocumentLibrary';
 
 const EnDocs = () => {
   const { 
@@ -33,7 +34,7 @@ const EnDocs = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      content: "Hello! I'm your EnDocs assistant. How can I help you analyze your documents today?",
+      content: "Hello! I'm your EnDocs assistant. Upload documents to get started, then ask me questions about them.",
       sender: 'bot',
       timestamp: new Date(),
     }
@@ -54,10 +55,37 @@ const EnDocs = () => {
     setIsLoading(true);
     setIsTyping(true);
     
+    // Check if documents are available
+    if (documents.length === 0 && isUploading === false) {
+      setTimeout(() => {
+        const botMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          content: "Please upload some documents first so I can analyze them and answer your questions.",
+          sender: 'bot',
+          timestamp: new Date(),
+        };
+        
+        setMessages(prev => [...prev, botMessage]);
+        setIsLoading(false);
+        setIsTyping(false);
+        
+        toast({
+          title: "No documents available",
+          description: "Please upload documents to analyze.",
+          duration: 3000,
+        });
+      }, 1000);
+      return;
+    }
+    
     setTimeout(() => {
       const shouldShowTable = message.toLowerCase().includes('table') || 
                              message.toLowerCase().includes('document') ||
                              Math.random() > 0.5;
+      
+      // Select a random document as reference
+      const randomDocIndex = Math.floor(Math.random() * documentData.length);
+      const randomDoc = documentData[randomDocIndex];
       
       const responseText = `I've analyzed your documents regarding "${message}" and here's what I found...`;
       
@@ -66,7 +94,8 @@ const EnDocs = () => {
         content: responseText,
         sender: 'bot',
         timestamp: new Date(),
-        showTable: shouldShowTable
+        showTable: shouldShowTable,
+        documentReference: randomDoc.title
       };
       
       setMessages(prev => [...prev, botMessage]);
@@ -75,7 +104,7 @@ const EnDocs = () => {
       
       toast({
         title: "Response generated",
-        description: "We've analyzed your documents and provided the results.",
+        description: `We've analyzed your documents using ${currentDataSource.name} and provided the results.`,
         duration: 3000,
       });
     }, 1500);
@@ -111,7 +140,12 @@ const EnDocs = () => {
       return (
         <div className="pl-10 pr-10">
           <div className="glass-panel p-4">
-            <h3 className="font-medium text-sm mb-3">Document Analysis Results</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-sm">Document Analysis Results</h3>
+              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                From {currentDataSource.name}
+              </span>
+            </div>
             <div className="w-full overflow-x-auto pt-2">
               <Table>
                 <TableHeader className="bg-secondary/50">
@@ -161,28 +195,14 @@ const EnDocs = () => {
       animate="show"
       variants={containerAnimation}
     >
-      <motion.div 
-        className="max-w-6xl mx-auto mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-        variants={itemAnimation}
-      >
-        <div>
-          <div className="pill bg-primary/10 text-primary mb-2 font-medium">
-            <FileText className="w-3.5 h-3.5 mr-1.5" />
-            Document Analysis
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-1">
-            EnDocs
-          </h1>
-          <p className="text-muted-foreground">
-            Chat with your documents and get text-based insights
-          </p>
-        </div>
-
-        <DataSourceIndicator 
-          currentSource={currentDataSource}
-          onSourceChange={setCurrentDataSource}
-        />
-      </motion.div>
+      <PageHeader
+        icon={FileText}
+        title="EnDocs"
+        subtitle="Chat with your documents and get text-based insights"
+        badgeText="Document Analysis"
+        currentDataSource={currentDataSource}
+        onSourceChange={setCurrentDataSource}
+      />
 
       <motion.div 
         variants={itemAnimation} 
@@ -190,12 +210,20 @@ const EnDocs = () => {
       >
         <div className="w-full lg:w-64 flex flex-col gap-6">
           <div className="glass-panel p-4">
-            <ChatSessionList 
+            <CompactChatSessionList 
               sessions={sessions}
               activeSessionId={activeSessionId}
               onSelectSession={selectSession}
               onDeleteSession={deleteSession}
               onCreateNewSession={createNewSession}
+            />
+          </div>
+          
+          <div className="glass-panel p-4">
+            <DocumentLibrary 
+              documents={documents}
+              isUploading={isUploading}
+              onRemove={removeDocument}
             />
           </div>
           

@@ -2,14 +2,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3 } from 'lucide-react';
-import DataSourceIndicator from '@/components/shared/DataSourceIndicator';
-import DataVisualizer from '@/components/ui/DataVisualizer';
 import { dataSources, textResponses, citySalesData } from '@/lib/mock-data';
 import { useToast } from '@/components/ui/use-toast';
 import { useApp } from '@/contexts/AppContext';
-import ChatSessionList from '@/components/chat/ChatSessionList';
 import DocumentUploader from '@/components/documents/DocumentUploader';
 import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
+import PageHeader from '@/components/layout/PageHeader';
+import CompactChatSessionList from '@/components/chat/CompactChatSessionList';
+import DocumentLibrary from '@/components/documents/DocumentLibrary';
 
 const EnSights = () => {
   const { 
@@ -89,7 +89,7 @@ const EnSights = () => {
       
       toast({
         title: "Visualization generated",
-        description: "We've processed your query and created the visualization.",
+        description: `We've processed your query using ${currentDataSource.name} and created the visualization.`,
         duration: 3000,
       });
     }, 1500);
@@ -125,11 +125,24 @@ const EnSights = () => {
     if (message.showGraph && message.sender === 'bot') {
       return (
         <div className="pl-10 pr-10">
-          <DataVisualizer 
-            data={citySalesData}
-            title="Data Visualization"
-            className="bg-muted/10"
-          />
+          <div className="bg-muted/10 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-sm">Data from: {currentDataSource.name}</h3>
+              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                Visual Analysis
+              </span>
+            </div>
+            <div className="w-full">
+              {/* DataVisualizer from UI components */}
+              <div className="glass-panel">
+                <DataVisualizer 
+                  data={citySalesData}
+                  title="Data Visualization"
+                  className="bg-transparent"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       );
     }
@@ -143,28 +156,14 @@ const EnSights = () => {
       animate="show"
       variants={containerAnimation}
     >
-      <motion.div 
-        className="max-w-6xl mx-auto mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-        variants={itemAnimation}
-      >
-        <div>
-          <div className="pill bg-primary/10 text-primary mb-2 font-medium">
-            <BarChart3 className="w-3.5 h-3.5 mr-1.5" />
-            Data Visualization
-          </div>
-          <h1 className="text-2xl md:text-3xl font-bold mb-1">
-            EnSights
-          </h1>
-          <p className="text-muted-foreground">
-            Chat with your data and get instant visualizations
-          </p>
-        </div>
-
-        <DataSourceIndicator 
-          currentSource={currentDataSource}
-          onSourceChange={setCurrentDataSource}
-        />
-      </motion.div>
+      <PageHeader 
+        icon={BarChart3}
+        title="EnSights"
+        subtitle="Chat with your data and get instant visualizations"
+        badgeText="Data Visualization"
+        currentDataSource={currentDataSource}
+        onSourceChange={setCurrentDataSource}
+      />
 
       {/* Main Content Container */}
       <motion.div 
@@ -174,12 +173,20 @@ const EnSights = () => {
         {/* Sidebar */}
         <div className="w-full lg:w-64 flex flex-col gap-6">
           <div className="glass-panel p-4">
-            <ChatSessionList 
+            <CompactChatSessionList 
               sessions={sessions}
               activeSessionId={activeSessionId}
               onSelectSession={selectSession}
               onDeleteSession={deleteSession}
               onCreateNewSession={createNewSession}
+            />
+          </div>
+          
+          <div className="glass-panel p-4">
+            <DocumentLibrary 
+              documents={documents}
+              isUploading={isUploading}
+              onRemove={removeDocument}
             />
           </div>
           
@@ -204,7 +211,7 @@ const EnSights = () => {
         />
       </motion.div>
       
-      {/* Data Source Info */}
+      {/* Help Text */}
       <motion.div variants={itemAnimation} className="max-w-6xl mx-auto mt-4">
         <div className="text-center text-sm text-muted-foreground">
           <p>Try asking questions like "Show sales data by city" or "Create a visualization of quarterly trends"</p>

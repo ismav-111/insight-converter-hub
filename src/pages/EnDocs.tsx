@@ -1,17 +1,17 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileText } from 'lucide-react';
+import { FileText, Upload } from 'lucide-react';
 import { documentData } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import DocumentUploader from '@/components/documents/DocumentUploader';
 import { useApp } from '@/contexts/AppContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import CompactChatSessionList from '@/components/chat/CompactChatSessionList';
 import DocumentLibrary from '@/components/documents/DocumentLibrary';
+import { Button } from '@/components/ui/button';
 
 const EnDocs = () => {
   const { 
@@ -25,8 +25,6 @@ const EnDocs = () => {
     uploadDocuments,
     removeDocument,
     isUploading,
-    
-    currentDataSource
   } = useApp();
   
   const [isLoading, setIsLoading] = useState(false);
@@ -187,6 +185,15 @@ const EnDocs = () => {
     return null;
   };
 
+  // Document uploader trigger function
+  const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(null);
+  
+  const handleUploadClick = () => {
+    if (fileInputRef) {
+      fileInputRef.click();
+    }
+  };
+
   return (
     <motion.div 
       className="min-h-screen pt-20 px-4 md:px-8 pb-8 mx-auto"
@@ -216,20 +223,38 @@ const EnDocs = () => {
             />
           </div>
           
-          <div className="glass-panel p-4">
+          <div className="glass-panel p-4 relative">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium">Document Library</h3>
+              <Button 
+                size="icon" 
+                variant="outline" 
+                className="h-7 w-7" 
+                onClick={handleUploadClick}
+                title="Upload documents"
+              >
+                <Upload className="h-3.5 w-3.5" />
+                <span className="sr-only">Upload documents</span>
+              </Button>
+              
+              {/* Hidden file input for document upload */}
+              <input
+                type="file"
+                ref={input => setFileInputRef(input)}
+                className="hidden"
+                multiple
+                onChange={e => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    uploadDocuments(Array.from(e.target.files));
+                  }
+                }}
+              />
+            </div>
+            
             <DocumentLibrary 
               documents={documents}
               isUploading={isUploading}
               onRemove={removeDocument}
-            />
-          </div>
-          
-          <div className="glass-panel p-4">
-            <DocumentUploader 
-              documents={documents}
-              onUpload={uploadDocuments}
-              onRemove={removeDocument}
-              isUploading={isUploading}
             />
           </div>
         </div>
@@ -239,7 +264,7 @@ const EnDocs = () => {
           messages={messages}
           isTyping={isTyping}
           isLoading={isLoading}
-          currentDataSource={currentDataSource}
+          currentDataSource={{id: 'documents', name: 'Document Library'}}
           onSendQuery={handleSendQuery}
           renderVisualization={renderVisualization}
         />
@@ -248,7 +273,7 @@ const EnDocs = () => {
       <motion.div variants={itemAnimation} className="max-w-6xl mx-auto mt-4">
         <div className="text-center text-sm text-muted-foreground">
           <p>Try asking questions like "Analyze document trends" or "Summarize the latest reports"</p>
-          <p className="mt-1">Upload documents using the controls on the left to get started</p>
+          <p className="mt-1">Upload documents using the upload button in the document library to get started</p>
         </div>
       </motion.div>
     </motion.div>

@@ -10,6 +10,7 @@ import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import CompactChatSessionList from '@/components/chat/CompactChatSessionList';
 import DocumentLibrary from '@/components/documents/DocumentLibrary';
+import DataVisualizer from '@/components/ui/DataVisualizer';
 
 const EnSights = () => {
   const { 
@@ -133,14 +134,11 @@ const EnSights = () => {
               </span>
             </div>
             <div className="w-full">
-              {/* DataVisualizer from UI components */}
-              <div className="glass-panel">
-                <DataVisualizer 
-                  data={citySalesData}
-                  title="Data Visualization"
-                  className="bg-transparent"
-                />
-              </div>
+              <DataVisualizer 
+                data={citySalesData}
+                title="Data Visualization"
+                className="bg-transparent"
+              />
             </div>
           </div>
         </div>

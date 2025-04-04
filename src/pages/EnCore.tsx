@@ -1,14 +1,12 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useApp } from '@/contexts/AppContext';
-import DocumentUploader from '@/components/documents/DocumentUploader';
 import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import CompactChatSessionList from '@/components/chat/CompactChatSessionList';
-import DocumentLibrary from '@/components/documents/DocumentLibrary';
 
 const EnCore = () => {
   const { 
@@ -18,13 +16,7 @@ const EnCore = () => {
     selectSession,
     deleteSession,
     
-    documents,
-    uploadDocuments,
-    removeDocument,
-    isUploading,
-    
-    currentDataSource,
-    setCurrentDataSource
+    currentDataSource
   } = useApp();
   
   const [isLoading, setIsLoading] = useState(false);
@@ -113,8 +105,6 @@ const EnCore = () => {
         title="EnCore"
         subtitle="Chat with your data assistant for general inquiries"
         badgeText="General Assistant"
-        currentDataSource={currentDataSource}
-        onSourceChange={setCurrentDataSource}
       />
 
       {/* Main Content Container */}
@@ -133,23 +123,6 @@ const EnCore = () => {
               onCreateNewSession={createNewSession}
             />
           </div>
-          
-          <div className="glass-panel p-4">
-            <DocumentLibrary 
-              documents={documents}
-              isUploading={isUploading}
-              onRemove={removeDocument}
-            />
-          </div>
-          
-          <div className="glass-panel p-4">
-            <DocumentUploader 
-              documents={documents}
-              onUpload={uploadDocuments}
-              onRemove={removeDocument}
-              isUploading={isUploading}
-            />
-          </div>
         </div>
 
         {/* Chat Container */}
@@ -166,7 +139,6 @@ const EnCore = () => {
       <motion.div variants={itemAnimation} className="max-w-6xl mx-auto mt-4">
         <div className="text-center text-sm text-muted-foreground">
           <p>Try asking questions like "What insights can you provide about my data?" or "Help me understand my current dataset"</p>
-          <p className="mt-1">You can change data sources using the selector at the top right</p>
         </div>
       </motion.div>
     </motion.div>

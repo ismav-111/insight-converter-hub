@@ -1,9 +1,8 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3 } from 'lucide-react';
 import { dataSources, textResponses, citySalesData } from '@/lib/mock-data';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useApp } from '@/contexts/AppContext';
 import DocumentUploader from '@/components/documents/DocumentUploader';
 import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
@@ -39,6 +38,13 @@ const EnSights = () => {
       content: "Hello! I'm your EnSights assistant. How can I help you visualize and analyze your data today?",
       sender: 'bot',
       timestamp: new Date(),
+    },
+    {
+      id: '2',
+      content: "Here's a sample visualization of sales data across different cities to help you get started.",
+      sender: 'bot',
+      timestamp: new Date(),
+      showGraph: true
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);

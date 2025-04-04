@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import DataSourceIndicator from '@/components/shared/DataSourceIndicator';
-import { DataSource } from '@/lib/mock-data';
+import { DataSource, dataSources } from '@/lib/mock-data';
 import { LucideIcon } from 'lucide-react';
 
 interface PageHeaderProps {
@@ -11,7 +11,7 @@ interface PageHeaderProps {
   title: string;
   subtitle: string;
   badgeText: string;
-  currentDataSource: DataSource;
+  currentDataSource?: DataSource;
   onSourceChange?: (source: DataSource) => void;
   className?: string;
 }
@@ -21,7 +21,7 @@ const PageHeader = ({
   title,
   subtitle,
   badgeText,
-  currentDataSource,
+  currentDataSource = dataSources[0], // Provide default value
   onSourceChange,
   className
 }: PageHeaderProps) => {
@@ -56,10 +56,13 @@ const PageHeader = ({
         </p>
       </div>
 
-      <DataSourceIndicator 
-        currentSource={currentDataSource}
-        onSourceChange={onSourceChange}
-      />
+      {/* Only show data source selector if currentDataSource is provided */}
+      {currentDataSource && (
+        <DataSourceIndicator 
+          currentSource={currentDataSource}
+          onSourceChange={onSourceChange}
+        />
+      )}
     </motion.div>
   );
 };

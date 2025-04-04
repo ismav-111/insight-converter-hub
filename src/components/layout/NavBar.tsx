@@ -88,7 +88,7 @@ const NavBar = () => {
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 md:px-8",
         isScrolled 
           ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md py-2 shadow-sm" 
-          : "bg-transparent py-4"
+          : "bg-background/95 backdrop-blur-sm shadow-sm py-4"
       )}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -105,10 +105,10 @@ const NavBar = () => {
           </NavLink>
         </motion.div>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation - Enhanced for visibility */}
         {!isMobile && (
           <nav className="flex items-center space-x-2">
-            <div className="px-4 py-2 bg-muted/50 rounded-full flex items-center gap-2 shadow-sm">
+            <div className="px-4 py-2 bg-muted/60 rounded-full flex items-center gap-2 shadow-sm border border-border/40">
               {navItems.map((item, i) => (
                 <motion.div
                   key={item.path}
@@ -117,19 +117,19 @@ const NavBar = () => {
                   animate="animate"
                   variants={navLinkAnimation}
                 >
-                  <Tooltip>
+                  <Tooltip delayDuration={300}>
                     <TooltipTrigger asChild>
                       <NavLink
                         to={item.path}
                         className={({ isActive }) => cn(
-                          "flex items-center justify-center gap-2 px-4 py-2 rounded-full transition-colors",
+                          "flex items-center justify-center gap-2 px-4 py-2 rounded-full transition-colors text-sm font-medium",
                           isActive 
                             ? "bg-primary text-primary-foreground shadow-sm" 
-                            : "hover:bg-muted"
+                            : "hover:bg-muted text-foreground hover:text-primary"
                         )}
                       >
                         {item.icon}
-                        <span className="font-medium">{item.label}</span>
+                        <span>{item.label}</span>
                       </NavLink>
                     </TooltipTrigger>
                     <TooltipContent>{item.description}</TooltipContent>
@@ -164,10 +164,10 @@ const NavBar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Toggle - Made more visible */}
           {isMobile && (
             <button
-              className="p-2 ml-2 rounded-full bg-gray-100 dark:bg-gray-800 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="p-2 ml-2 rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             >
@@ -181,18 +181,18 @@ const NavBar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Enhanced for better visibility */}
       {isMobile && (
         <motion.div
           className={cn(
-            "fixed top-16 right-0 bottom-0 w-3/4 bg-white dark:bg-gray-900 shadow-xl z-50 p-6",
+            "fixed top-16 right-0 bottom-0 w-3/4 bg-background shadow-xl z-50 p-6",
             "border-l border-border flex flex-col"
           )}
           initial="closed"
           animate={mobileMenuOpen ? "open" : "closed"}
           variants={mobileMenuAnimation}
         >
-          <nav className="flex flex-col space-y-4">
+          <nav className="flex flex-col space-y-2">
             {navItems.map((item, i) => (
               <NavLink
                 key={item.path}
@@ -201,7 +201,7 @@ const NavBar = () => {
                   "py-3 px-4 rounded-lg flex items-center transition-colors",
                   isActive 
                     ? "bg-primary/10 text-primary font-medium" 
-                    : "text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800"
+                    : "text-foreground hover:bg-muted"
                 )}
               >
                 {item.icon}

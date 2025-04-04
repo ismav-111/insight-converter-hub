@@ -25,6 +25,8 @@ const EnDocs = () => {
     uploadDocuments,
     removeDocument,
     isUploading,
+    
+    currentDataSource
   } = useApp();
   
   const [isLoading, setIsLoading] = useState(false);
@@ -206,6 +208,7 @@ const EnDocs = () => {
         title="EnDocs"
         subtitle="Chat with your documents and get text-based insights"
         badgeText="Document Analysis"
+        currentDataSource={currentDataSource}
       />
 
       <motion.div 
@@ -264,7 +267,7 @@ const EnDocs = () => {
           messages={messages}
           isTyping={isTyping}
           isLoading={isLoading}
-          currentDataSource={{id: 'documents', name: 'Document Library'}}
+          currentDataSource={currentDataSource}
           onSendQuery={handleSendQuery}
           renderVisualization={renderVisualization}
         />

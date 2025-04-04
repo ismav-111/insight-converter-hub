@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare } from 'lucide-react';
@@ -105,6 +104,7 @@ const EnCore = () => {
         title="EnCore"
         subtitle="Chat with your data assistant for general inquiries"
         badgeText="General Assistant"
+        currentDataSource={currentDataSource}
       />
 
       {/* Main Content Container */}

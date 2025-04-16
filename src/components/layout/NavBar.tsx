@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, Link } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from 'framer-motion';
@@ -11,10 +11,19 @@ import {
   Bell,
   Menu,
   X,
-  BarChart3
+  BarChart3,
+  User,
+  ChevronDown
 } from "lucide-react";
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu';
 
 const NavBar = () => {
   const location = useLocation();
@@ -151,18 +160,42 @@ const NavBar = () => {
             </button>
           )}
 
-          <div className="flex items-center">
-            <Avatar className="w-8 h-8 border border-border">
-              <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                J
-              </AvatarFallback>
-            </Avatar>
-            {!isMobile && (
-              <span className="ml-2 text-sm font-medium">
-                My Account
-              </span>
-            )}
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="flex items-center cursor-pointer">
+                <Avatar className="w-8 h-8 border border-border">
+                  <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                    A
+                  </AvatarFallback>
+                </Avatar>
+                {!isMobile && (
+                  <div className="ml-2 flex items-center">
+                    <span className="text-sm font-medium">
+                      My Account
+                    </span>
+                    <ChevronDown className="ml-1 h-4 w-4 text-muted-foreground" />
+                  </div>
+                )}
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="flex items-center">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile Settings</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Bell className="mr-2 h-4 w-4" />
+                <span>Notifications</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Mobile Menu Toggle - Made more visible */}
           {isMobile && (
@@ -211,6 +244,22 @@ const NavBar = () => {
                 </div>
               </NavLink>
             ))}
+            
+            <NavLink
+              to="/profile"
+              className={({ isActive }) => cn(
+                "py-3 px-4 rounded-lg flex items-center transition-colors",
+                isActive 
+                  ? "bg-primary/10 text-primary font-medium" 
+                  : "text-foreground hover:bg-muted"
+              )}
+            >
+              <User className="w-5 h-5" />
+              <div className="ml-3">
+                <div className="font-medium">Profile Settings</div>
+                <div className="text-xs text-muted-foreground">Manage your account</div>
+              </div>
+            </NavLink>
           </nav>
 
           <div className="mt-auto pt-6 border-t border-border">

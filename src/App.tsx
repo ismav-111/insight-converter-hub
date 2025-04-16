@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import EnSights from "./pages/EnSights";
 import EnDocs from "./pages/EnDocs";
 import EnCore from "./pages/EnCore";
+import ProfileSettings from "./pages/ProfileSettings";
 import NotFound from "./pages/NotFound";
 import NavBar from "./components/layout/NavBar";
 import { AppProvider } from "./contexts/AppContext";
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/ensights" element={<EnSights />} />
               <Route path="/endocs" element={<EnDocs />} />
               <Route path="/encore" element={<EnCore />} />
+              <Route path="/profile" element={<ProfileSettings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>

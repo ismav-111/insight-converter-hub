@@ -57,7 +57,7 @@ const PageHeader = ({
       </div>
 
       {/* Only show data source selector if currentDataSource is provided */}
-      {currentDataSource && (
+      {currentDataSource && onSourceChange && (
         <DataSourceIndicator 
           currentSource={currentDataSource}
           onSourceChange={onSourceChange}

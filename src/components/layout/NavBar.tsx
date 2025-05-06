@@ -68,7 +68,7 @@ const NavBar = () => {
     open: { opacity: 1, x: 0, transition: { duration: 0.4 } },
   };
 
-  // Nav items with better icons and descriptions - improved visibility
+  // Nav items with better icons and descriptions
   const navItems = [
     { 
       path: '/encore', 
@@ -93,123 +93,128 @@ const NavBar = () => {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 md:px-8",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
         isScrolled 
-          ? "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md py-2 shadow-sm" 
-          : "bg-background/95 backdrop-blur-sm shadow-sm py-4"
+          ? "bg-white/90 dark:bg-gray-900/90 backdrop-blur-md py-2 shadow-sm" 
+          : "bg-background backdrop-blur-sm shadow-sm py-4"
       )}
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo */}
-        <motion.div 
-          className="flex items-center" 
-          initial="initial" 
-          animate="animate" 
-          variants={logoAnimation}
-        >
-          <NavLink to="/" className="flex items-center">
-            <span className="text-2xl font-bold text-gradient">enplify</span>
-            <span className="text-sm text-muted-foreground">.ai</span>
-          </NavLink>
-        </motion.div>
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <motion.div 
+            className="flex items-center" 
+            initial="initial" 
+            animate="animate" 
+            variants={logoAnimation}
+          >
+            <NavLink to="/" className="flex items-center">
+              <span className="text-2xl font-bold text-gradient">enplify</span>
+              <span className="text-sm text-muted-foreground">.ai</span>
+            </NavLink>
+          </motion.div>
 
-        {/* Desktop Navigation - Improved visibility */}
-        {!isMobile && (
-          <nav className="flex items-center space-x-2">
-            <div className="px-4 py-2 bg-primary/10 rounded-full flex items-center gap-3 shadow-sm border border-primary/20">
-              {navItems.map((item, i) => (
-                <motion.div
-                  key={item.path}
-                  custom={i}
-                  initial="initial"
-                  animate="animate"
-                  variants={navLinkAnimation}
-                >
-                  <Tooltip delayDuration={300}>
-                    <TooltipTrigger asChild>
-                      <NavLink
-                        to={item.path}
-                        className={({ isActive }) => cn(
-                          "flex items-center justify-center gap-2 px-4 py-2 rounded-full transition-colors text-sm font-medium",
-                          isActive 
-                            ? "bg-primary text-primary-foreground shadow-sm" 
-                            : "hover:bg-primary/20 text-foreground hover:text-primary"
-                        )}
-                      >
-                        {item.icon}
-                        <span>{item.label}</span>
-                      </NavLink>
-                    </TooltipTrigger>
-                    <TooltipContent>{item.description}</TooltipContent>
-                  </Tooltip>
-                </motion.div>
-              ))}
-            </div>
-          </nav>
-        )}
-
-        {/* User Menu */}
-        <div className="flex items-center space-x-2">
+          {/* Main Navigation - Improved visibility */}
           {!isMobile && (
-            <button 
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
-              aria-label="Notifications"
-            >
-              <Bell className="w-4 h-4 text-muted-foreground" />
-            </button>
-          )}
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex items-center cursor-pointer">
-                <Avatar className="w-8 h-8 border border-primary/20">
-                  <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                    A
-                  </AvatarFallback>
-                </Avatar>
-                {!isMobile && (
-                  <div className="ml-2 flex items-center">
-                    <span className="text-sm font-medium">
-                      My Account
-                    </span>
-                    <ChevronDown className="ml-1 h-4 w-4 text-muted-foreground" />
-                  </div>
-                )}
+            <nav className="flex items-center">
+              <div className="bg-white dark:bg-gray-800 shadow-sm rounded-full flex items-center gap-1 px-1 py-1 border border-gray-200 dark:border-gray-700">
+                {navItems.map((item, i) => (
+                  <motion.div
+                    key={item.path}
+                    custom={i}
+                    initial="initial"
+                    animate="animate"
+                    variants={navLinkAnimation}
+                    className="relative"
+                  >
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <NavLink
+                          to={item.path}
+                          className={({ isActive }) => cn(
+                            "flex items-center gap-2 px-4 py-2 rounded-full transition-colors text-sm font-medium",
+                            isActive 
+                              ? "bg-primary text-primary-foreground shadow-sm" 
+                              : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200"
+                          )}
+                        >
+                          {item.icon}
+                          <span>{item.label}</span>
+                        </NavLink>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        {item.description}
+                      </TooltipContent>
+                    </Tooltip>
+                  </motion.div>
+                ))}
               </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem asChild>
-                <Link to="/profile" className="flex items-center">
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile Settings</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Bell className="mr-2 h-4 w-4" />
-                <span>Notifications</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                Logout
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Mobile Menu Toggle - Made more visible */}
-          {isMobile && (
-            <button
-              className="p-2 ml-2 rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            >
-              {mobileMenuOpen ? (
-                <X className="w-5 h-5" />
-              ) : (
-                <Menu className="w-5 h-5" />
-              )}
-            </button>
+            </nav>
           )}
+
+          {/* User Menu */}
+          <div className="flex items-center space-x-3">
+            {!isMobile && (
+              <button 
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
+                aria-label="Notifications"
+              >
+                <Bell className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex items-center cursor-pointer bg-gray-100 dark:bg-gray-800 rounded-full py-1 px-2 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                  <Avatar className="w-8 h-8 border border-primary/20">
+                    <AvatarFallback className="bg-primary/10 text-primary text-sm">
+                      A
+                    </AvatarFallback>
+                  </Avatar>
+                  {!isMobile && (
+                    <div className="ml-2 flex items-center">
+                      <span className="text-sm font-medium">
+                        My Account
+                      </span>
+                      <ChevronDown className="ml-1 h-4 w-4 text-muted-foreground" />
+                    </div>
+                  )}
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="flex items-center">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile Settings</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <Bell className="mr-2 h-4 w-4" />
+                  <span>Notifications</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Mobile Menu Toggle */}
+            {isMobile && (
+              <button
+                className="p-2 rounded-full bg-primary/10 text-primary transition-colors hover:bg-primary/20"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              >
+                {mobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -217,57 +222,54 @@ const NavBar = () => {
       {isMobile && (
         <motion.div
           className={cn(
-            "fixed top-16 right-0 bottom-0 w-3/4 bg-background shadow-xl z-50 p-6",
-            "border-l border-border flex flex-col"
+            "fixed inset-0 z-50 bg-background/95 backdrop-blur-sm",
+            "top-16"
           )}
           initial="closed"
           animate={mobileMenuOpen ? "open" : "closed"}
           variants={mobileMenuAnimation}
         >
-          <nav className="flex flex-col space-y-2">
-            {navItems.map((item, i) => (
+          <div className="container mx-auto px-4 py-8">
+            <nav className="flex flex-col space-y-4">
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) => cn(
+                    "flex items-center p-4 rounded-lg",
+                    isActive 
+                      ? "bg-primary/10 text-primary" 
+                      : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="mr-3">{item.icon}</div>
+                  <div>
+                    <div className="font-medium">{item.label}</div>
+                    <div className="text-sm text-muted-foreground">{item.description}</div>
+                  </div>
+                </NavLink>
+              ))}
+              
               <NavLink
-                key={item.path}
-                to={item.path}
+                to="/profile"
                 className={({ isActive }) => cn(
-                  "py-3 px-4 rounded-lg flex items-center transition-colors",
+                  "flex items-center p-4 rounded-lg",
                   isActive 
-                    ? "bg-primary/10 text-primary font-medium" 
-                    : "text-foreground hover:bg-muted"
+                    ? "bg-primary/10 text-primary" 
+                    : "hover:bg-gray-100 dark:hover:bg-gray-800"
                 )}
+                onClick={() => setMobileMenuOpen(false)}
               >
-                {item.icon}
-                <div className="ml-3">
-                  <div className="font-medium">{item.label}</div>
-                  <div className="text-xs text-muted-foreground">{item.description}</div>
+                <div className="mr-3">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-medium">Profile Settings</div>
+                  <div className="text-sm text-muted-foreground">Manage your account</div>
                 </div>
               </NavLink>
-            ))}
-            
-            <NavLink
-              to="/profile"
-              className={({ isActive }) => cn(
-                "py-3 px-4 rounded-lg flex items-center transition-colors",
-                isActive 
-                  ? "bg-primary/10 text-primary font-medium" 
-                  : "text-foreground hover:bg-muted"
-              )}
-            >
-              <User className="w-5 h-5" />
-              <div className="ml-3">
-                <div className="font-medium">Profile Settings</div>
-                <div className="text-xs text-muted-foreground">Manage your account</div>
-              </div>
-            </NavLink>
-          </nav>
-
-          <div className="mt-auto pt-6 border-t border-border">
-            <button 
-              className="w-full py-2 px-4 rounded-lg flex items-center text-muted-foreground hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <Bell className="w-5 h-5 mr-3" />
-              Notifications
-            </button>
+            </nav>
           </div>
         </motion.div>
       )}

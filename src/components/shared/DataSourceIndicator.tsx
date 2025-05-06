@@ -7,7 +7,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 
 interface DataSourceIndicatorProps {
@@ -43,7 +45,9 @@ const DataSourceIndicator = ({
   if (!onSourceChange) {
     // If no change handler, just display the current source without dropdown
     return (
-      <div className={cn("inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary", 
+      <div className={cn(
+        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full",
+        "bg-primary/10 text-primary border border-primary/20", 
         compact ? "text-xs" : "text-sm",
         className
       )}>
@@ -56,27 +60,31 @@ const DataSourceIndicator = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={cn(
-        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors",
-        "border border-primary/20",
+        "inline-flex items-center gap-2 px-3 py-2 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors",
+        "border border-primary/20 shadow-sm",
         compact ? "text-xs" : "text-sm",
         className
       )}>
         {getIcon(selected.type)}
-        <span>{selected.name}</span>
+        <span className="font-medium">{selected.name}</span>
         <ChevronDown className="w-3.5 h-3.5 ml-1" />
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent align="end" className="min-w-[180px]">
+      <DropdownMenuContent align="end" className="min-w-[220px]">
+        <DropdownMenuLabel>Select Data Source</DropdownMenuLabel>
+        <DropdownMenuSeparator />
         {dataSources.map((source) => (
           <DropdownMenuItem
             key={source.id}
             className={cn(
-              "flex items-center gap-2",
+              "flex items-center gap-2 py-2",
               selected.id === source.id && "bg-primary/10 font-medium text-primary"
             )}
             onClick={() => handleSourceSelect(source)}
           >
-            {getIcon(source.type)}
+            <div className="p-1 bg-primary/10 rounded text-primary">
+              {getIcon(source.type)}
+            </div>
             {source.name}
           </DropdownMenuItem>
         ))}

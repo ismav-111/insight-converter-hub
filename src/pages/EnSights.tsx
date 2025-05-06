@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart3 } from 'lucide-react';
+import { BarChart3, Upload } from 'lucide-react';
 import { dataSources, textResponses, citySalesData } from '@/lib/mock-data';
 import { useToast } from '@/hooks/use-toast';
 import { useApp } from '@/contexts/AppContext';
-import DocumentUploader from '@/components/documents/DocumentUploader';
 import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import CompactChatSessionList from '@/components/chat/CompactChatSessionList';
 import DocumentLibrary from '@/components/documents/DocumentLibrary';
 import DataVisualizer from '@/components/ui/DataVisualizer';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const EnSights = () => {
   const { 
@@ -48,6 +49,7 @@ const EnSights = () => {
     }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [fileInputRef, setFileInputRef] = useState<HTMLInputElement | null>(null);
   const { toast } = useToast();
 
   const handleSendQuery = (message: string) => {
@@ -100,6 +102,12 @@ const EnSights = () => {
         duration: 3000,
       });
     }, 1500);
+  };
+
+  const handleUploadClick = () => {
+    if (fileInputRef) {
+      fileInputRef.click();
+    }
   };
 
   // Animation variants
@@ -177,6 +185,41 @@ const EnSights = () => {
         {/* Sidebar */}
         <div className="w-full lg:w-64 flex flex-col gap-6">
           <div className="glass-panel p-4">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium">Chat History</h3>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    size="icon" 
+                    variant="outline" 
+                    className="h-7 w-7" 
+                    onClick={handleUploadClick}
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    <span className="sr-only">Upload documents</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Upload documents</TooltipContent>
+              </Tooltip>
+              
+              {/* Hidden file input for document upload */}
+              <input
+                type="file"
+                ref={input => setFileInputRef(input)}
+                className="hidden"
+                multiple
+                onChange={e => {
+                  if (e.target.files && e.target.files.length > 0) {
+                    uploadDocuments(Array.from(e.target.files));
+                    toast({
+                      title: "Documents uploaded",
+                      description: `${e.target.files.length} document(s) uploaded successfully.`,
+                      duration: 3000,
+                    });
+                  }
+                }}
+              />
+            </div>
             <CompactChatSessionList 
               sessions={sessions}
               activeSessionId={activeSessionId}
@@ -186,20 +229,13 @@ const EnSights = () => {
             />
           </div>
           
+          {/* Document Library panel (simplified) */}
           <div className="glass-panel p-4">
             <DocumentLibrary 
               documents={documents}
               isUploading={isUploading}
               onRemove={removeDocument}
-            />
-          </div>
-          
-          <div className="glass-panel p-4">
-            <DocumentUploader 
-              documents={documents}
-              onUpload={uploadDocuments}
-              onRemove={removeDocument}
-              isUploading={isUploading}
+              showTitle={true}
             />
           </div>
         </div>

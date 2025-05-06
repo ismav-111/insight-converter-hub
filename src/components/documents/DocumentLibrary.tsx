@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { File, FileText, FileSpreadsheet, FileIcon, X } from 'lucide-react';
+import { File, FileText, FileSpreadsheet, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { UploadedDocument } from '@/components/documents/DocumentUploader';
@@ -35,12 +35,14 @@ interface DocumentLibraryProps {
   documents: UploadedDocument[];
   isUploading: boolean;
   onRemove: (documentId: string) => void;
+  showTitle?: boolean;
 }
 
 const DocumentLibrary = ({
   documents,
   isUploading,
-  onRemove
+  onRemove,
+  showTitle = false
 }: DocumentLibraryProps) => {
   // Format file size
   const formatFileSize = (bytes: number): string => {
@@ -66,7 +68,7 @@ const DocumentLibrary = ({
   
   return (
     <div className="w-full">
-      <h3 className="text-sm font-medium mb-3">Document Library</h3>
+      {showTitle && <h3 className="text-sm font-medium mb-3">Document Library</h3>}
       
       <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
         {displayDocuments.map((doc) => (

@@ -40,11 +40,11 @@ const PageHeader = ({
 
   return (
     <motion.div 
-      className={cn("w-full max-w-6xl mx-auto mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4", className)}
+      className={cn("w-full max-w-6xl mx-auto mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4", className)}
       variants={itemAnimation}
     >
       <div>
-        <div className="pill bg-primary/10 text-primary mb-2 font-medium">
+        <div className="pill bg-primary/10 text-primary mb-2 font-medium px-3 py-1.5 rounded-full inline-flex items-center">
           <Icon className="w-3.5 h-3.5 mr-1.5" />
           {badgeText}
         </div>

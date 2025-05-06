@@ -1,11 +1,10 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MessageSquare, FileText, BarChart3, ArrowRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { MessageSquare } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import DataVisualizer from '@/components/ui/DataVisualizer';
 import { citySalesData } from '@/lib/mock-data';
-import { useToast } from '@/hooks/use-toast';
 import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
 import CompactChatSessionList from '@/components/chat/CompactChatSessionList';
 import DocumentUploader from '@/components/documents/DocumentUploader';
@@ -132,31 +131,6 @@ const Index = () => {
     return null;
   };
 
-  // Feature cards data with enhanced styling
-  const features = [
-    {
-      title: "EnCore",
-      description: "General AI assistant for all your data needs",
-      icon: <MessageSquare className="w-12 h-12 text-primary" />,
-      route: "/encore",
-      color: "bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-900/30 border-blue-200 dark:border-blue-800"
-    },
-    {
-      title: "EnDocs",
-      description: "Analyze and extract insights from your documents",
-      icon: <FileText className="w-12 h-12 text-primary" />,
-      route: "/endocs",
-      color: "bg-gradient-to-br from-amber-50 to-orange-100 dark:from-amber-950/30 dark:to-orange-900/30 border-amber-200 dark:border-amber-800"
-    },
-    {
-      title: "EnSights",
-      description: "Visualize your data with powerful charts and graphs",
-      icon: <BarChart3 className="w-12 h-12 text-primary" />,
-      route: "/ensights",
-      color: "bg-gradient-to-br from-emerald-50 to-teal-100 dark:from-emerald-950/30 dark:to-teal-900/30 border-emerald-200 dark:border-emerald-800"
-    }
-  ];
-
   return (
     <motion.div 
       className="min-h-screen pt-20 px-4 md:px-8 pb-8 mx-auto"
@@ -172,38 +146,6 @@ const Index = () => {
         currentDataSource={currentDataSource}
         onSourceChange={setCurrentDataSource}
       />
-
-      {/* Features Section - Enhanced for better visibility */}
-      <motion.div 
-        variants={itemAnimation} 
-        className="max-w-6xl mx-auto mb-12"
-      >
-        <h2 className="text-2xl font-semibold mb-6 text-center">Explore Our Features</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {features.map((feature) => (
-            <motion.div 
-              key={feature.title}
-              whileHover={{ scale: 1.03, y: -5 }}
-              className={`${feature.color} rounded-xl shadow-md border p-6 hover:shadow-lg transition-all`}
-            >
-              <div className="flex justify-center mb-4">
-                <div className="p-3 bg-white/50 dark:bg-gray-800/30 rounded-full">
-                  {feature.icon}
-                </div>
-              </div>
-              <h3 className="text-xl font-semibold mb-2 text-center">{feature.title}</h3>
-              <p className="text-muted-foreground mb-6 text-center">{feature.description}</p>
-              <div className="flex justify-center">
-                <Button size="lg" asChild>
-                  <Link to={feature.route} className="flex items-center gap-2 px-6">
-                    Explore {feature.title} <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
 
       {/* Main Content Container */}
       <motion.div 

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare } from 'lucide-react';
@@ -6,6 +7,8 @@ import { useApp } from '@/contexts/AppContext';
 import ChatContainer, { ChatMessage } from '@/components/chat/ChatContainer';
 import PageHeader from '@/components/layout/PageHeader';
 import CompactChatSessionList from '@/components/chat/CompactChatSessionList';
+import DataVisualizer from '@/components/ui/DataVisualizer';
+import { citySalesData } from '@/lib/mock-data';
 
 const EnCore = () => {
   const { 
@@ -14,8 +17,8 @@ const EnCore = () => {
     createNewSession,
     selectSession,
     deleteSession,
-    
-    currentDataSource
+    currentDataSource,
+    setCurrentDataSource
   } = useApp();
   
   const [isLoading, setIsLoading] = useState(false);
@@ -45,6 +48,13 @@ const EnCore = () => {
     
     // Simulate API call
     setTimeout(() => {
+      // Determine if this query should show a graph
+      const shouldShowGraph = message.toLowerCase().includes('chart') || 
+                             message.toLowerCase().includes('graph') || 
+                             message.toLowerCase().includes('visualization') ||
+                             message.toLowerCase().includes('data') ||
+                             Math.random() > 0.5; // 50% chance to show graph for demo purposes
+                             
       // Generate a response based on the data source
       const responseText = `I've analyzed your query about "${message}" using the ${currentDataSource.name} data source. Here's what I found...`;
       
@@ -53,6 +63,7 @@ const EnCore = () => {
         content: responseText,
         sender: 'bot',
         timestamp: new Date(),
+        showGraph: shouldShowGraph
       };
       
       setMessages(prev => [...prev, botMessage]);
@@ -65,6 +76,22 @@ const EnCore = () => {
         duration: 3000,
       });
     }, 1500);
+  };
+
+  // Render visualization
+  const renderVisualization = (message: ChatMessage) => {
+    if (message.showGraph && message.sender === 'bot') {
+      return (
+        <div className="pl-10 pr-10">
+          <DataVisualizer 
+            data={citySalesData}
+            title="Data Visualization"
+            className="bg-muted/10"
+          />
+        </div>
+      );
+    }
+    return null;
   };
 
   // Animation variants
@@ -105,6 +132,7 @@ const EnCore = () => {
         subtitle="Chat with your data assistant for general inquiries"
         badgeText="General Assistant"
         currentDataSource={currentDataSource}
+        onSourceChange={setCurrentDataSource}
       />
 
       {/* Main Content Container */}
@@ -132,6 +160,7 @@ const EnCore = () => {
           isLoading={isLoading}
           currentDataSource={currentDataSource}
           onSendQuery={handleSendQuery}
+          renderVisualization={renderVisualization}
         />
       </motion.div>
       

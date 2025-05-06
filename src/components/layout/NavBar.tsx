@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from 'framer-motion';
 import {
-  LayoutPanelLeft,
   FileText,
   MessageSquare,
   Bell,
@@ -69,7 +68,7 @@ const NavBar = () => {
     open: { opacity: 1, x: 0, transition: { duration: 0.4 } },
   };
 
-  // Nav items with better icons and descriptions
+  // Nav items with better icons and descriptions - improved visibility
   const navItems = [
     { 
       path: '/encore', 
@@ -114,10 +113,10 @@ const NavBar = () => {
           </NavLink>
         </motion.div>
 
-        {/* Desktop Navigation - Enhanced for visibility */}
+        {/* Desktop Navigation - Improved visibility */}
         {!isMobile && (
           <nav className="flex items-center space-x-2">
-            <div className="px-4 py-2 bg-muted/60 rounded-full flex items-center gap-2 shadow-sm border border-border/40">
+            <div className="px-4 py-2 bg-primary/10 rounded-full flex items-center gap-3 shadow-sm border border-primary/20">
               {navItems.map((item, i) => (
                 <motion.div
                   key={item.path}
@@ -134,7 +133,7 @@ const NavBar = () => {
                           "flex items-center justify-center gap-2 px-4 py-2 rounded-full transition-colors text-sm font-medium",
                           isActive 
                             ? "bg-primary text-primary-foreground shadow-sm" 
-                            : "hover:bg-muted text-foreground hover:text-primary"
+                            : "hover:bg-primary/20 text-foreground hover:text-primary"
                         )}
                       >
                         {item.icon}
@@ -163,7 +162,7 @@ const NavBar = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex items-center cursor-pointer">
-                <Avatar className="w-8 h-8 border border-border">
+                <Avatar className="w-8 h-8 border border-primary/20">
                   <AvatarFallback className="bg-primary/10 text-primary text-sm">
                     A
                   </AvatarFallback>
@@ -214,7 +213,7 @@ const NavBar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu - Enhanced for better visibility */}
+      {/* Mobile Menu */}
       {isMobile && (
         <motion.div
           className={cn(

@@ -206,7 +206,6 @@ const EnDocs = () => {
       <PageHeader
         icon={FileText}
         title="EnDocs"
-        subtitle="Chat with your documents and get text-based insights"
         badgeText="Document Analysis"
         currentDataSource={currentDataSource}
       />
@@ -217,6 +216,9 @@ const EnDocs = () => {
       >
         <div className="w-full lg:w-64 flex flex-col gap-6">
           <div className="glass-panel p-4">
+            <div className="mb-2">
+              <h3 className="text-sm font-medium">Sessions</h3>
+            </div>
             <CompactChatSessionList 
               sessions={sessions}
               activeSessionId={activeSessionId}
@@ -258,6 +260,7 @@ const EnDocs = () => {
               documents={documents}
               isUploading={isUploading}
               onRemove={removeDocument}
+              showTitle={false}
             />
           </div>
         </div>

@@ -9,11 +9,12 @@ import { LucideIcon } from 'lucide-react';
 interface PageHeaderProps {
   icon: LucideIcon;
   title: string;
-  subtitle: string;
-  badgeText: string;
+  subtitle?: string;
+  badgeText?: string;
   currentDataSource?: DataSource;
   onSourceChange?: (source: DataSource) => void;
   className?: string;
+  minimal?: boolean;
 }
 
 const PageHeader = ({
@@ -23,7 +24,8 @@ const PageHeader = ({
   badgeText,
   currentDataSource = dataSources[0],
   onSourceChange,
-  className
+  className,
+  minimal = true // Set minimal to true by default
 }: PageHeaderProps) => {
   const itemAnimation = {
     hidden: { opacity: 0, y: 20 },
@@ -38,6 +40,39 @@ const PageHeader = ({
     }
   };
 
+  if (minimal) {
+    return (
+      <motion.div 
+        className={cn("w-full max-w-6xl mx-auto mb-6", className)}
+        variants={itemAnimation}
+      >
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/10 text-primary rounded-full p-2">
+              <Icon className="w-5 h-5" />
+            </div>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+              {title}
+            </h1>
+            {badgeText && (
+              <span className="hidden md:inline-block pill bg-primary/10 text-primary font-medium px-2 py-1 text-sm rounded-full">
+                {badgeText}
+              </span>
+            )}
+          </div>
+
+          {currentDataSource && onSourceChange && (
+            <DataSourceIndicator 
+              currentSource={currentDataSource}
+              onSourceChange={onSourceChange}
+            />
+          )}
+        </div>
+      </motion.div>
+    );
+  }
+
+  // Original non-minimal design
   return (
     <motion.div 
       className={cn("w-full max-w-6xl mx-auto mb-8", className)}
@@ -50,17 +85,21 @@ const PageHeader = ({
               <div className="bg-primary/10 text-primary rounded-full p-2">
                 <Icon className="w-5 h-5" />
               </div>
-              <span className="pill bg-primary/10 text-primary font-medium px-3 py-1.5 rounded-full">
-                {badgeText}
-              </span>
+              {badgeText && (
+                <span className="pill bg-primary/10 text-primary font-medium px-3 py-1.5 rounded-full">
+                  {badgeText}
+                </span>
+              )}
             </div>
             
             <h1 className="text-2xl md:text-3xl font-bold mb-1 text-gray-900 dark:text-white">
               {title}
             </h1>
-            <p className="text-muted-foreground max-w-xl">
-              {subtitle}
-            </p>
+            {subtitle && (
+              <p className="text-muted-foreground max-w-xl">
+                {subtitle}
+              </p>
+            )}
           </div>
 
           {currentDataSource && onSourceChange && (

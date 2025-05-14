@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare } from 'lucide-react';
@@ -129,7 +128,6 @@ const EnCore = () => {
       <PageHeader
         icon={MessageSquare}
         title="EnCore"
-        subtitle="Chat with your data assistant for general inquiries"
         badgeText="General Assistant"
         currentDataSource={currentDataSource}
         onSourceChange={setCurrentDataSource}
@@ -143,6 +141,9 @@ const EnCore = () => {
         {/* Sidebar */}
         <div className="w-full lg:w-64 flex flex-col gap-6">
           <div className="glass-panel p-4">
+            <div className="mb-2">
+              <h3 className="text-sm font-medium">Sessions</h3>
+            </div>
             <CompactChatSessionList 
               sessions={sessions}
               activeSessionId={activeSessionId}

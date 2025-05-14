@@ -186,7 +186,7 @@ const EnSights = () => {
         <div className="w-full lg:w-64 flex flex-col gap-6">
           <div className="glass-panel p-4">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium">Chat History</h3>
+              <h3 className="text-sm font-medium">Sessions</h3>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
@@ -226,16 +226,6 @@ const EnSights = () => {
               onSelectSession={selectSession}
               onDeleteSession={deleteSession}
               onCreateNewSession={createNewSession}
-            />
-          </div>
-          
-          {/* Document Library panel (simplified) */}
-          <div className="glass-panel p-4">
-            <DocumentLibrary 
-              documents={documents}
-              isUploading={isUploading}
-              onRemove={removeDocument}
-              showTitle={true}
             />
           </div>
         </div>
